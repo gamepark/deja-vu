@@ -1,0 +1,35 @@
+{
+  "name": "@gamepark/game-template",
+  "version": "0.0.0",
+  "description": "The rules of Game Template adapted for Game Park",
+  "sideEffects": false,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "author": "Romain Fromi <romain@game-park.com> (https://game-park.com/)",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "vitest",
+    "check:cycles": "madge --circular --extensions ts src",
+    "build": "yarn check:cycles && tsc",
+    "prepublishOnly": "yarn check:cycles && tsc",
+    "publish": "lerna publish",
+    "lint": "eslint --fix"
+  },
+  "peerDependencies": {
+    "@gamepark/rules-api": ">=7",
+    "es-toolkit": "^1.45.1"
+  },
+  "devDependencies": {
+    "@gamepark/rules-api": "~7.6.3",
+    "es-toolkit": "^1.46.0",
+    "madge": "^8.0.0",
+    "vitest": "^4.1.5"
+  }
+}
