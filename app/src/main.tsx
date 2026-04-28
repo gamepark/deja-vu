@@ -1,6 +1,6 @@
-import { GameTemplateOptionsSpec } from '@gamepark/game-template/GameTemplateOptions'
-import { GameTemplateRules } from '@gamepark/game-template/GameTemplateRules'
-import { GameTemplateSetup } from '@gamepark/game-template/GameTemplateSetup'
+import { DejaVuOptionsSpec } from '@gamepark/deja-vu/DejaVuOptions'
+import { DejaVuRules } from '@gamepark/deja-vu/DejaVuRules'
+import { DejaVuSetup } from '@gamepark/deja-vu/DejaVuSetup'
 import { GameProvider } from '@gamepark/react-game'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -12,10 +12,10 @@ import { Material } from './material/Material'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <GameProvider
-      game="game-template"
-      Rules={GameTemplateRules}
-      optionsSpec={GameTemplateOptionsSpec}
-      GameSetup={GameTemplateSetup}
+      game="deja-vu"
+      Rules={DejaVuRules}
+      optionsSpec={DejaVuOptionsSpec}
+      GameSetup={DejaVuSetup}
       material={Material}
       locators={Locators}
       animations={gameAnimations}

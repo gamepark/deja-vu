@@ -1,4 +1,4 @@
-import { RuleId } from '@gamepark/game-template/rules/RuleId'
+import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
 import { ComponentType } from 'react'
 import { TheFirstStepHeader } from './TheFirstStepHeader'
 

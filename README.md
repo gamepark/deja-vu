@@ -46,7 +46,7 @@ To deploy the React app, install [rclone](https://rclone.org/) then configure:
 ```
 rclone config
 > n
-name> game-template
+name> deja-vu
 Storage> s3
 provider> Other
 env_auth> false

@@ -1,3 +1,3 @@
-export { GameTemplateRules } from './GameTemplateRules'
-export { GameTemplateOptionsSpec } from './GameTemplateOptions'
-export { GameTemplateSetup } from './GameTemplateSetup'
+export { DejaVuRules } from './DejaVuRules'
+export { DejaVuOptionsSpec } from './DejaVuOptions'
+export { DejaVuSetup } from './DejaVuSetup'

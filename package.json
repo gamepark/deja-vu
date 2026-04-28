@@ -19,13 +19,13 @@
     "vitest": "^4.1.5"
   },
   "scripts": {
-    "dev": "yarn workspace @gamepark/game-template-app run dev",
-    "test": "yarn workspace @gamepark/game-template run test && yarn workspace @gamepark/game-template-app run test",
-    "preview": "yarn workspace @gamepark/game-template-app run preview",
-    "build": "yarn workspace @gamepark/game-template-app run build",
-    "deploy": "yarn workspace @gamepark/game-template-app run deploy",
+    "dev": "yarn workspace @gamepark/deja-vu-app run dev",
+    "test": "yarn workspace @gamepark/deja-vu run test && yarn workspace @gamepark/deja-vu-app run test",
+    "preview": "yarn workspace @gamepark/deja-vu-app run preview",
+    "build": "yarn workspace @gamepark/deja-vu-app run build",
+    "deploy": "yarn workspace @gamepark/deja-vu-app run deploy",
     "publish": "lerna publish",
-    "lint": "yarn workspace @gamepark/game-template run lint && yarn workspace @gamepark/game-template-app run lint",
+    "lint": "yarn workspace @gamepark/deja-vu run lint && yarn workspace @gamepark/deja-vu-app run lint",
     "linkgp": "yarn link ../rules-api ../react-client ../react-game -r && git update-index --skip-worktree package.json yarn.lock",
     "unlinkgp": "git update-index --no-skip-worktree package.json yarn.lock && yarn unlink ../react-game ../react-client ../rules-api"
   },
