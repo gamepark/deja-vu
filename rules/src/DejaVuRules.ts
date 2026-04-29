@@ -1,4 +1,4 @@
-import { MaterialGame, MaterialMove, MaterialRules, TimeLimit } from '@gamepark/rules-api'
+import { MaterialGame, MaterialMove, MaterialRules, PositiveSequenceStrategy, TimeLimit } from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { RuleId } from './rules/RuleId'
@@ -16,7 +16,11 @@ export class DejaVuRules
     [RuleId.TheFirstStep]: TheFirstStepRule
   }
 
-  locationsStrategies = {}
+  locationsStrategies = {
+    [MaterialType.DejaVuCard]: {
+      [LocationType.Deck]: new PositiveSequenceStrategy(),
+    },
+  }
 
   giveTime(): number {
     return 60

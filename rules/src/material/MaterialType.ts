@@ -1,1 +1,4 @@
-export enum MaterialType {}
+export enum MaterialType {
+  DejaVuCard = 1,
+  InstinctToken
+}
