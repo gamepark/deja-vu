@@ -3,5 +3,5 @@ export enum LocationType {
   Grid,
   PlayerShowCard,
   PlayerPile,
-  PlayerTokenArea
+  PlayerTokenPile
 }

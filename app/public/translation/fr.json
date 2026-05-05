@@ -1,1 +1,23 @@
-{}
+{
+  "action.select": "Sélectionner",
+  "action.unselect": "Désélectionner",
+  "action.observe": "Observer",
+  "action.flip": "Retourner",
+  "action.put-back": "Remettre en place",
+  "action.reveal": "Révéler",
+  "action.terminate": "Terminer",
+  "header.play-card.you": "Observez ou retournez une carte",
+  "header.play-card.end-card.you": "Observez ou retournez une carte <take>Prendre la carte Fin</take>",
+  "game.over.instinct": "{player} gagne par instinct !",
+  "game.over.winner": "{player} remporte la partie avec {score} points !",
+  "game.over.tie": "Égalité !",
+  "header.play-card.player": "{player} choisit son action",
+  "header.observe-card.you": "Remettez la carte observée en place",
+  "header.observe-card.player": "{player} observe une carte",
+  "header.reveal.you": "Révélez des cartes de la grille <terminate>Terminer</terminate>",
+  "header.reveal.player": "{player} révèle des cartes",
+  "header.end-of-turn.you": "<give>Donner un jeton pour rejouer</give> ou <end>Finir mon tour</end>",
+  "header.end-of-turn.player": "{player} décide de rejouer ou de finir son tour",
+  "action.give-token": "Donner un jeton pour rejouer",
+  "action.end-turn": "Finir mon tour"
+}

@@ -1,6 +1,13 @@
+import { LocationType } from '@gamepark/deja-vu/material/LocationType'
 import { DejaVuCard } from '@gamepark/deja-vu/material/DejaVuCard.ts'
-import { CardDescription } from '@gamepark/react-game'
-import { MaterialItem } from '@gamepark/rules-api'
+import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
+import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
+import { faArrowRotateLeft, faEye, faHandPointer, faRotate, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { CardDescription, ItemContext, ItemMenuButton, MaterialContext } from '@gamepark/react-game'
+import { isMoveItemType, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { createElement, Fragment } from 'react'
+import { Trans } from 'react-i18next'
 import Front02 from "../images/cards/Front0-2.jpg"
 import Front03 from "../images/cards/Front0-3.jpg"
 import Front04 from "../images/cards/Front0-4.jpg"
@@ -51,7 +58,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
   height = 8.8
   borderRadius = 0.3
 
-  images= {
+  images = {
     [DejaVuCard.card02]: Front02,
     [DejaVuCard.card03]: Front03,
     [DejaVuCard.card04]: Front04,
@@ -87,7 +94,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
     [DejaVuCard.cardEnd]: CardEnd,
   }
 
-  backImages= {
+  backImages = {
     [DejaVuCard.card02]: Back02,
     [DejaVuCard.card03]: Back03,
     [DejaVuCard.card04]: Back04,
@@ -123,7 +130,99 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
     [DejaVuCard.cardEnd]: CardEnd,
   }
 
-  isFlipped = (item: Partial<MaterialItem>) => !!item.location?.rotation
+  isMenuAlwaysVisible(item: MaterialItem): boolean {
+    return item.location?.type === LocationType.PlayerShowCard
+  }
+
+  isFlipped(item: Partial<MaterialItem>, context: MaterialContext): boolean {
+    if (item.location?.type === LocationType.PlayerShowCard) {
+      return item.location.player !== context.player
+    }
+    return !!item.location?.rotation
+  }
+
+  getItemMenu(item: MaterialItem, context: ItemContext, legalMoves: MaterialMove[]) {
+    if (item.location.type === LocationType.PlayerShowCard) {
+      return this.getShowCardMenu(context, legalMoves)
+    }
+    if (item.location.type !== LocationType.Grid && item.location.type !== LocationType.Deck) return null
+    if (context.rules.game.rule?.player !== context.player) return null
+
+    if (context.rules.game.rule?.id === RuleId.RevealCard) return null
+
+    const observerMove = legalMoves.find(move =>
+      isMoveItemType(MaterialType.DejaVuCard)(move) &&
+      move.itemIndex === context.index &&
+      move.location.type === LocationType.PlayerShowCard
+    )
+    const retournerMove = legalMoves.find(move =>
+      isMoveItemType(MaterialType.DejaVuCard)(move) &&
+      move.itemIndex === context.index &&
+      (move.location.type === LocationType.Grid || move.location.type === LocationType.Deck)
+    )
+
+    if (!item.selected) {
+      if (!observerMove && !retournerMove) return null
+      const cards = context.rules.material(MaterialType.DejaVuCard)
+      const selectMoves = [
+        ...cards.selected().unselectItems(),
+        cards.index(context.index).selectItem()
+      ]
+      return createElement(ItemMenuButton, {
+        x: 4, y: 0,
+        label: createElement(Trans, { i18nKey: 'action.select' }),
+        labelPosition: 'right' as const,
+        move: selectMoves[selectMoves.length - 1],
+        moves: selectMoves,
+        options: { transient: true }
+      }, createElement(FontAwesomeIcon, { icon: faHandPointer }))
+    }
+
+    const unselectMove = context.rules.material(MaterialType.DejaVuCard).index(context.index).unselectItem()
+    return createElement(Fragment, null,
+      createElement(ItemMenuButton, {
+        x: 4, y: -2.5,
+        label: createElement(Trans, { i18nKey: 'action.unselect' }),
+        labelPosition: 'right' as const,
+        move: unselectMove,
+        options: { transient: true }
+      }, createElement(FontAwesomeIcon, { icon: faTimes })),
+      observerMove && createElement(ItemMenuButton, {
+        x: 4, y: 0,
+        label: createElement(Trans, { i18nKey: 'action.observe' }),
+        labelPosition: 'right' as const,
+        move: observerMove
+      }, createElement(FontAwesomeIcon, { icon: faEye })),
+      retournerMove && createElement(ItemMenuButton, {
+        x: 4, y: 2.5,
+        label: createElement(Trans, { i18nKey: 'action.flip' }),
+        labelPosition: 'right' as const,
+        move: retournerMove
+      }, createElement(FontAwesomeIcon, { icon: faRotate }))
+    )
+  }
+  canShortClick(move: MaterialMove, context: ItemContext): boolean {
+    if (context.rules.game.rule?.id !== RuleId.RevealCard) return false
+    if (!isMoveItemType(MaterialType.DejaVuCard)(move)) return false
+    if (move.itemIndex !== context.index) return false
+    return move.location.rotation === false
+  }
+
+  private getShowCardMenu(context: ItemContext, legalMoves: MaterialMove[]) {
+    if (context.rules.game.rule?.player !== context.player) return null
+    const putBackMove = legalMoves.find(move =>
+      isMoveItemType(MaterialType.DejaVuCard)(move) &&
+      move.itemIndex === context.index &&
+      (move.location.type === LocationType.Grid || move.location.type === LocationType.Deck)
+    )
+    if (!putBackMove) return null
+    return createElement(ItemMenuButton, {
+      x: 4, y: 0,
+      label: createElement(Trans, { i18nKey: 'action.put-back' }),
+      labelPosition: 'right' as const,
+      move: putBackMove
+    }, createElement(FontAwesomeIcon, { icon: faArrowRotateLeft }))
+  }
 }
 
 export const dejaVuCardDescription = new DejaVuCardDescription()

@@ -5,12 +5,12 @@ import { dejaVuCardsDeckLocator } from './DejaVuCardsDeckLocator.ts'
 import { dejaVuGridLocator } from './DejaVuGridLocator'
 import { playerPileLocator } from './PlayerPileLocator'
 import { playerShowCardLocator } from './PlayerShowCardLocator.ts'
-import { playerTokenAreaLocator } from './PlayerTokenAreaLocator'
+import { playerTokenPileLocator } from './PlayerTokenPileLocator.ts'
 
 export const Locators: Partial<Record<LocationType, Locator<number, MaterialType, LocationType>>> = {
   [LocationType.Deck]: dejaVuCardsDeckLocator,
   [LocationType.Grid]: dejaVuGridLocator,
   [LocationType.PlayerPile]: playerPileLocator,
   [LocationType.PlayerShowCard]: playerShowCardLocator,
-  [LocationType.PlayerTokenArea]: playerTokenAreaLocator
+  [LocationType.PlayerTokenPile]: playerTokenPileLocator
 }

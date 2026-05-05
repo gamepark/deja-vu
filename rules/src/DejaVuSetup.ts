@@ -24,10 +24,13 @@ export class DejaVuSetup extends MaterialGameSetup<number, MaterialType, Locatio
         .moveItems({ type: LocationType.Grid, x: i, rotation: true })
     }
 
-
+    this.material(MaterialType.InstinctToken).createItems([
+      ...Array.from({ length: 3 }, () => ({ location: { type: LocationType.PlayerTokenPile, player: this.players[0] } })),
+      ...Array.from({ length: 4 }, () => ({ location: { type: LocationType.PlayerTokenPile, player: this.players[1] } }))
+    ])
   }
 
   start() {
-    this.startPlayerTurn(RuleId.TheFirstStep, this.players[0])
+    this.startPlayerTurn(RuleId.PlayCard, this.players[0])
   }
 }

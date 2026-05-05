@@ -1,3 +1,6 @@
 export enum RuleId {
-  TheFirstStep = 1
+  PlayCard = 1,
+  ObserveCard,
+  RevealCard,
+  EndOfTurn
 }
