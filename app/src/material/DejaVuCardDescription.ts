@@ -1,5 +1,6 @@
 import { LocationType } from '@gamepark/deja-vu/material/LocationType'
 import { DejaVuCard } from '@gamepark/deja-vu/material/DejaVuCard.ts'
+import { DejaVuCardHelp } from './help/DejaVuCardHelp'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
 import { faArrowRotateLeft, faEye, faHandPointer, faRotate, faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -57,6 +58,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
   width = 6.3
   height = 8.8
   borderRadius = 0.3
+  help = DejaVuCardHelp
 
   images = {
     [DejaVuCard.card02]: Front02,
