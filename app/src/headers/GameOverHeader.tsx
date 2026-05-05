@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { endCard } from '@gamepark/deja-vu/material/DejaVuCard'
-import { LocationType } from '@gamepark/deja-vu/material/LocationType'
-import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
+import { INSTINCT_WIN_THRESHOLD } from '@gamepark/deja-vu/GameConstants'
+import { PlayerColor } from '@gamepark/deja-vu/PlayerColor'
+import { ScoreHelper } from '@gamepark/deja-vu/rules/helper/ScoreHelper'
 import { usePlayerName, useRankedPlayers, useRules } from '@gamepark/react-game'
 import { Trans } from 'react-i18next'
 
@@ -12,10 +12,10 @@ export const GameOverHeader = () => {
   const winnerName = usePlayerName(winner.id)
   const isTie = rankedPlayers.length > 1 && rankedPlayers[1].rank === winner.rank
 
-  const winnerTokenCount = (rules.game.items[MaterialType.InstinctToken] ?? [])
-    .filter((item: any) => item.location.player === winner.id).length
+  const scoreHelper = new ScoreHelper(rules.game)
+  const winnerTokenCount = scoreHelper.getTokenCount(winner.id as PlayerColor)
 
-  if (!isTie && winnerTokenCount >= 7) {
+  if (!isTie && winnerTokenCount >= INSTINCT_WIN_THRESHOLD) {
     return <Trans i18nKey="game.over.instinct" values={{ player: winnerName }} />
   }
 
@@ -23,12 +23,6 @@ export const GameOverHeader = () => {
     return <Trans i18nKey="game.over.tie" />
   }
 
-  const cards = (rules.game.items[MaterialType.DejaVuCard] ?? []).filter((item: any) =>
-    item.location.type === LocationType.PlayerPile &&
-    item.location.player === winner.id &&
-    item.id !== endCard
-  ).length
-  const score = cards + winnerTokenCount * 0.5
-
+  const score = scoreHelper.getScore(winner.id as PlayerColor)
   return <Trans i18nKey="game.over.winner" values={{ player: winnerName, score }} />
 }

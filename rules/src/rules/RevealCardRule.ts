@@ -1,9 +1,11 @@
 import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
 import { dejaVuCardsData, DejaVuCard, endCard } from '../material/DejaVuCard'
+import { BONUS_TOKEN_THRESHOLD, INSTINCT_WIN_THRESHOLD, TERMINATE_MIN_OCCURRENCES } from '../GameConstants'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { RuleId } from './RuleId'
+import { EndGameHelper } from './helper/EndGameHelper'
 
 export class RevealCardRule extends PlayerTurnRule {
   getPlayerMoves(): MaterialMove[] {
@@ -31,45 +33,8 @@ export class RevealCardRule extends PlayerTurnRule {
     const newCard = allItems[move.itemIndex]
     if (!newCard?.id) return []
 
-    const previousFaceUp = allItems
-      .map((item, index) => ({ item, index }))
-      .filter(({ item, index }) =>
-        index !== move.itemIndex &&
-        (item.location.type === LocationType.Grid || item.location.type === LocationType.Deck) &&
-        item.location.rotation === false
-      )
-
-    if (previousFaceUp.length === 0) return []
-
-    const prevCommon = this.intersectNumbers(previousFaceUp.map(({ item }) => item.id as DejaVuCard))
-    if (prevCommon.length === 0) return []
-
-    const newNumbers = dejaVuCardsData[newCard.id as DejaVuCard]
-    const isValid = newNumbers.some(n => prevCommon.includes(n))
-
-    if (!isValid) {
-      const flipMoves = [
-        ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false).rotateItems(true),
-        ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false).rotateItems(true)
-      ]
-      const tokensBefore = this.material(MaterialType.InstinctToken)
-        .location(LocationType.PlayerTokenPile).player(this.player).length
-      const opponentTokensBefore = this.material(MaterialType.InstinctToken)
-        .location(LocationType.PlayerTokenPile).player(this.nextPlayer).length
-      const tokenToGive = this.material(MaterialType.InstinctToken)
-        .location(LocationType.PlayerTokenPile).player(this.player).getIndexes()
-      const tokenMoves = tokenToGive.length > 0
-        ? [this.material(MaterialType.InstinctToken).index(tokenToGive[0]).moveItem({ type: LocationType.PlayerTokenPile, player: this.nextPlayer })]
-        : []
-      const opponentTokensAfter = opponentTokensBefore + (tokenMoves.length > 0 ? 1 : 0)
-      let endMove: MaterialMove
-      if (opponentTokensAfter >= 7) {
-        endMove = this.endGame()
-      } else {
-        const tokensAfter = tokensBefore - (tokenMoves.length > 0 ? 1 : 0)
-        endMove = tokensAfter > 0 ? this.startRule(RuleId.EndOfTurn) : this.nextPlayerOrEnd()
-      }
-      return [...flipMoves, ...tokenMoves, endMove]
+    if (!this.isRevealValid(move.itemIndex, newCard.id as DejaVuCard, allItems)) {
+      return this.failureMoves()
     }
 
     return []
@@ -78,8 +43,61 @@ export class RevealCardRule extends PlayerTurnRule {
   onCustomMove(move: CustomMove): MaterialMove[] {
     if (!isCustomMoveType(CustomMoveType.Terminate)(move)) return []
 
-    const moves: MaterialMove[] = []
+    const { collectMoves, faceUpIds, emptyPositions } = this.collectFaceUpCards()
+    const refillMoves = this.refillGrid(emptyPositions)
+    const bonusMove = this.bonusTokenMove(faceUpIds)
 
+    const tokensBefore = this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile).player(this.player).length
+    const tokensAfter = tokensBefore + (bonusMove ? 1 : 0)
+
+    return [
+      ...collectMoves,
+      ...refillMoves,
+      ...(bonusMove ? [bonusMove] : []),
+      this.endMoveAfterTokenChange(tokensAfter)
+    ]
+  }
+
+  private isRevealValid(itemIndex: number, newCardId: DejaVuCard, allItems: { id?: unknown, location: { type: LocationType, rotation?: boolean } }[]): boolean {
+    const previousFaceUp = allItems
+      .map((item, index) => ({ item, index }))
+      .filter(({ item, index }) =>
+        index !== itemIndex &&
+        (item.location.type === LocationType.Grid || item.location.type === LocationType.Deck) &&
+        item.location.rotation === false
+      )
+
+    if (previousFaceUp.length === 0) return true
+
+    const prevCommon = this.intersectNumbers(previousFaceUp.map(({ item }) => item.id as DejaVuCard))
+    if (prevCommon.length === 0) return true
+
+    return dejaVuCardsData[newCardId].some(n => prevCommon.includes(n))
+  }
+
+  private failureMoves(): MaterialMove[] {
+    const flipMoves = [
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false).rotateItems(true),
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false).rotateItems(true)
+    ]
+    const tokensBefore = this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile).player(this.player).length
+    const opponentTokensBefore = this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile).player(this.nextPlayer).length
+    const tokenToGive = this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile).player(this.player).getIndexes()
+    const tokenMoves = tokenToGive.length > 0
+      ? [this.material(MaterialType.InstinctToken).index(tokenToGive[0]).moveItem({ type: LocationType.PlayerTokenPile, player: this.nextPlayer })]
+      : []
+    const opponentTokensAfter = opponentTokensBefore + (tokenMoves.length > 0 ? 1 : 0)
+    const endMove = opponentTokensAfter >= INSTINCT_WIN_THRESHOLD
+      ? this.endGame()
+      : (tokensBefore - (tokenMoves.length > 0 ? 1 : 0)) > 0 ? this.startRule(RuleId.EndOfTurn) : new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)
+    return [...flipMoves, ...tokenMoves, endMove]
+  }
+
+  private collectFaceUpCards(): { collectMoves: MaterialMove[], faceUpIds: DejaVuCard[], emptyPositions: number[] } {
     const faceUpGridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false)
     const faceUpDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false)
     const faceUpIds = [
@@ -87,12 +105,14 @@ export class RevealCardRule extends PlayerTurnRule {
       ...faceUpDeckCard.getItems().map(item => item.id as DejaVuCard)
     ]
     const emptyPositions = faceUpGridCards.getItems().map(item => item.location.x!)
-    moves.push(...faceUpGridCards.moveItems({ type: LocationType.PlayerPile, player: this.player, rotation: true }))
-    if (faceUpDeckCard.length) {
-      moves.push(faceUpDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player, rotation: true }))
-    }
+    const collectMoves: MaterialMove[] = [
+      ...faceUpGridCards.moveItems({ type: LocationType.PlayerPile, player: this.player, rotation: true }),
+      ...(faceUpDeckCard.length ? [faceUpDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player, rotation: true })] : [])
+    ]
+    return { collectMoves, faceUpIds, emptyPositions }
+  }
 
-    // Reremplissage sans la carte Fin ni la carte deck déjà face visible
+  private refillGrid(emptyPositions: number[]): MaterialMove[] {
     const deckIndexes = this.material(MaterialType.DejaVuCard)
       .location(LocationType.Deck)
       .sort(item => -(item.location.x ?? 0))
@@ -102,48 +122,34 @@ export class RevealCardRule extends PlayerTurnRule {
         return item?.id !== endCard && item?.location.rotation === true
       })
 
-    for (let i = 0; i < emptyPositions.length && i < deckIndexes.length; i++) {
-      moves.push(
-        this.material(MaterialType.DejaVuCard).index(deckIndexes[i]).moveItem({
-          type: LocationType.Grid,
-          x: emptyPositions[i],
-          rotation: true
-        })
-      )
-    }
+    return emptyPositions.slice(0, deckIndexes.length).map((x, i) =>
+      this.material(MaterialType.DejaVuCard).index(deckIndexes[i]).moveItem({ type: LocationType.Grid, x, rotation: true })
+    )
+  }
 
-    const tokensBefore = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(this.player).length
-    let willGain = false
-    if (this.countCommonOccurrences(faceUpIds) >= 4) {
-      const opponentTokens = this.material(MaterialType.InstinctToken)
-        .location(LocationType.PlayerTokenPile).player(this.nextPlayer).getIndexes()
-      if (opponentTokens.length > 0) {
-        moves.push(this.material(MaterialType.InstinctToken).index(opponentTokens[0]).moveItem({ type: LocationType.PlayerTokenPile, player: this.player }))
-        willGain = true
-      }
-    }
+  private bonusTokenMove(faceUpIds: DejaVuCard[]): MaterialMove | undefined {
+    if (this.countCommonOccurrences(faceUpIds) < BONUS_TOKEN_THRESHOLD) return undefined
+    const opponentTokens = this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile).player(this.nextPlayer).getIndexes()
+    if (opponentTokens.length === 0) return undefined
+    return this.material(MaterialType.InstinctToken).index(opponentTokens[0])
+      .moveItem({ type: LocationType.PlayerTokenPile, player: this.player })
+  }
 
-    const tokensAfter = tokensBefore + (willGain ? 1 : 0)
-    let endMove: MaterialMove
-    if (tokensAfter >= 7) {
-      endMove = this.endGame()
-    } else {
-      endMove = tokensAfter > 0 ? this.startRule(RuleId.EndOfTurn) : this.nextPlayerOrEnd()
-    }
-    moves.push(endMove)
-    return moves
+  private endMoveAfterTokenChange(tokensAfter: number): MaterialMove {
+    if (tokensAfter >= INSTINCT_WIN_THRESHOLD) return this.endGame()
+    return tokensAfter > 0 ? this.startRule(RuleId.EndOfTurn) : new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)
   }
 
   private get canTerminate(): boolean {
-    const faceUpIds = (this.game.items[MaterialType.DejaVuCard] ?? [])
-      .filter(item =>
-        (item.location.type === LocationType.Grid || item.location.type === LocationType.Deck) &&
-        item.location.rotation === false
-      )
-      .map(item => item.id as DejaVuCard)
+    return this.countCommonOccurrences(this.faceUpTableCards.map(item => item.id as DejaVuCard)) >= TERMINATE_MIN_OCCURRENCES
+  }
 
-    return this.countCommonOccurrences(faceUpIds) >= 3
+  private get faceUpTableCards() {
+    return [
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false).getItems(),
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false).getItems()
+    ]
   }
 
   private countCommonOccurrences(cardIds: DejaVuCard[]): number {
@@ -163,15 +169,5 @@ export class RevealCardRule extends PlayerTurnRule {
       if (common.length === 0) return []
     }
     return common
-  }
-
-  private nextPlayerOrEnd(): MaterialMove {
-    const endCardOwner = (this.game.items[MaterialType.DejaVuCard] ?? [])
-      .find(item => item.id === endCard && item.location.type === LocationType.PlayerPile)
-      ?.location?.player
-    if (endCardOwner !== undefined && this.nextPlayer === endCardOwner) {
-      return this.endGame()
-    }
-    return this.startPlayerTurn(RuleId.PlayCard, this.nextPlayer)
   }
 }

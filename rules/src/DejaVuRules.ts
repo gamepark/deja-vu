@@ -1,7 +1,7 @@
 import { CompetitiveScore, isMoveItemType, MaterialGame, MaterialMove, MaterialRules, PositiveSequenceStrategy, TimeLimit } from '@gamepark/rules-api'
-import { endCard } from './material/DejaVuCard'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
+import { ScoreHelper } from './rules/helper/ScoreHelper'
 import { RuleId } from './rules/RuleId'
 import { EndOfTurnRule } from './rules/EndOfTurnRule'
 import { ObserveCardRule } from './rules/ObserveCardRule'
@@ -40,14 +40,10 @@ export class DejaVuRules
     return type !== MaterialType.InstinctToken
   }
 
+  scoreHelper = new ScoreHelper(this.game)
+
   getScore(player: number): number {
-    const tokens = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(player).length
-    if (tokens >= 7) return 1000
-    const cards = this.material(MaterialType.DejaVuCard)
-      .location(LocationType.PlayerPile).player(player)
-      .getItems().filter(item => item.id !== endCard).length
-    return cards + tokens * 0.5
+    return this.scoreHelper.getScore(player)
   }
 
   giveTime(): number {

@@ -1,6 +1,6 @@
-import { endCard } from '@gamepark/deja-vu/material/DejaVuCard'
-import { LocationType } from '@gamepark/deja-vu/material/LocationType'
-import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
+import { INSTINCT_WIN_THRESHOLD } from '@gamepark/deja-vu/GameConstants'
+import { PlayerColor } from '@gamepark/deja-vu/PlayerColor'
+import { ScoreHelper } from '@gamepark/deja-vu/rules/helper/ScoreHelper'
 import { ScoringDescription } from '@gamepark/react-game'
 import { GameOverHeader } from './headers/GameOverHeader'
 
@@ -8,9 +8,9 @@ const enum ScoringKey { Cards = 1, Tokens, Total }
 
 export const scoring: ScoringDescription = {
   getScoringKeys: (rules) => {
-    const tokens: any[] = rules.game.items?.[MaterialType.InstinctToken] ?? []
-    const isInstinctWin = rules.game.players?.some((player: number) =>
-      tokens.filter(item => item.location?.player === player).length >= 7
+    const scoreHelper = new ScoreHelper(rules.game)
+    const isInstinctWin = (rules.game.players as PlayerColor[]).some(
+      player => scoreHelper.getTokenCount(player) >= INSTINCT_WIN_THRESHOLD
     )
     return isInstinctWin ? [] : [ScoringKey.Cards, ScoringKey.Tokens, ScoringKey.Total]
   },
@@ -22,17 +22,12 @@ export const scoring: ScoringDescription = {
   },
 
   getScoringPlayerData: (key, player, rules) => {
-    const cards = (rules.game.items?.[MaterialType.DejaVuCard] ?? []).filter((item: any) =>
-      item.location?.type === LocationType.PlayerPile &&
-      item.location?.player === player &&
-      item.id !== endCard
-    ).length
-    const tokens = (rules.game.items?.[MaterialType.InstinctToken] ?? []).filter((item: any) =>
-      item.location?.player === player
-    ).length
-    if (key === ScoringKey.Cards) return cards
+    const scoreHelper = new ScoreHelper(rules.game)
+    const tokens = scoreHelper.getTokenCount(player as PlayerColor)
+    const score = scoreHelper.getScore(player as PlayerColor)
+    if (key === ScoringKey.Cards) return score - tokens * 0.5
     if (key === ScoringKey.Tokens) return tokens * 0.5
-    return cards + tokens * 0.5
+    return score
   },
 
   ResultHeader: GameOverHeader

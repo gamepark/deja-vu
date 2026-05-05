@@ -1,9 +1,10 @@
 import { CustomMove, isCustomMoveType, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
-import { endCard } from '../material/DejaVuCard'
+import { INSTINCT_WIN_THRESHOLD } from '../GameConstants'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { RuleId } from './RuleId'
+import { EndGameHelper } from './helper/EndGameHelper'
 
 export class EndOfTurnRule extends PlayerTurnRule {
   getPlayerMoves(): MaterialMove[] {
@@ -15,7 +16,7 @@ export class EndOfTurnRule extends PlayerTurnRule {
 
   onCustomMove(move: CustomMove): MaterialMove[] {
     if (isCustomMoveType(CustomMoveType.EndTurn)(move)) {
-      return [this.nextPlayerOrEnd()]
+      return [new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)]
     }
     if (isCustomMoveType(CustomMoveType.GiveTokenToReplay)(move)) {
       const tokens = this.material(MaterialType.InstinctToken)
@@ -24,21 +25,11 @@ export class EndOfTurnRule extends PlayerTurnRule {
         .location(LocationType.PlayerTokenPile).player(this.nextPlayer).length
       const tokenMove = this.material(MaterialType.InstinctToken).index(tokens[0])
         .moveItem({ type: LocationType.PlayerTokenPile, player: this.nextPlayer })
-      if (opponentTokensBefore + 1 >= 7) {
+      if (opponentTokensBefore + 1 >= INSTINCT_WIN_THRESHOLD) {
         return [tokenMove, this.endGame()]
       }
       return [tokenMove, this.startRule(RuleId.PlayCard)]
     }
     return []
-  }
-
-  private nextPlayerOrEnd(): MaterialMove {
-    const endCardOwner = (this.game.items[MaterialType.DejaVuCard] ?? [])
-      .find(item => item.id === endCard && item.location.type === LocationType.PlayerPile)
-      ?.location?.player
-    if (endCardOwner !== undefined && this.nextPlayer === endCardOwner) {
-      return this.endGame()
-    }
-    return this.startPlayerTurn(RuleId.PlayCard, this.nextPlayer)
   }
 }
