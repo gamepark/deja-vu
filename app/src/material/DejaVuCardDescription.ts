@@ -5,9 +5,10 @@ import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
 import { faArrowRotateLeft, faEye, faHandPointer, faRotate, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CardDescription, ItemContext, ItemMenuButton, MaterialContext } from '@gamepark/react-game'
+import { CardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
 import { isMoveItemType, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { createElement, Fragment } from 'react'
+import { DejaVuMenuButton } from '../theme/DejaVuMenuButton'
 import { Trans } from 'react-i18next'
 import Front02 from "../images/cards/Front0-2.jpg"
 import Front03 from "../images/cards/Front0-3.jpg"
@@ -170,7 +171,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
         ...cards.selected().unselectItems(),
         cards.index(context.index).selectItem()
       ]
-      return createElement(ItemMenuButton, {
+      return createElement(DejaVuMenuButton, {
         x: 4, y: 0,
         label: createElement(Trans, { i18nKey: 'action.select' }),
         labelPosition: 'right' as const,
@@ -182,20 +183,20 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
 
     const unselectMove = context.rules.material(MaterialType.DejaVuCard).index(context.index).unselectItem()
     return createElement(Fragment, null,
-      createElement(ItemMenuButton, {
+      createElement(DejaVuMenuButton, {
         x: 4, y: -2.5,
         label: createElement(Trans, { i18nKey: 'action.unselect' }),
         labelPosition: 'right' as const,
         move: unselectMove,
         options: { transient: true }
       }, createElement(FontAwesomeIcon, { icon: faTimes })),
-      observerMove && createElement(ItemMenuButton, {
+      observerMove && createElement(DejaVuMenuButton, {
         x: 4, y: 0,
         label: createElement(Trans, { i18nKey: 'action.observe' }),
         labelPosition: 'right' as const,
         move: observerMove
       }, createElement(FontAwesomeIcon, { icon: faEye })),
-      retournerMove && createElement(ItemMenuButton, {
+      retournerMove && createElement(DejaVuMenuButton, {
         x: 4, y: 2.5,
         label: createElement(Trans, { i18nKey: 'action.flip' }),
         labelPosition: 'right' as const,
@@ -218,7 +219,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
       (move.location.type === LocationType.Grid || move.location.type === LocationType.Deck)
     )
     if (!putBackMove) return null
-    return createElement(ItemMenuButton, {
+    return createElement(DejaVuMenuButton, {
       x: 4, y: 0,
       label: createElement(Trans, { i18nKey: 'action.put-back' }),
       labelPosition: 'right' as const,

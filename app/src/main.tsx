@@ -10,6 +10,7 @@ import { Locators } from './locators/Locators'
 import { Material } from './material/Material'
 import { scoring } from './Scoring'
 import { DejaVuLogs } from './history/DejaVuLogs'
+import { theme } from './theme'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -23,6 +24,7 @@ createRoot(document.getElementById('root')!).render(
       animations={gameAnimations}
       scoring={scoring}
       logs={new DejaVuLogs()}
+      theme={theme}
     >
       <App />
     </GameProvider>
