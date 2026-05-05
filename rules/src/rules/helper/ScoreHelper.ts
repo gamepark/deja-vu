@@ -14,6 +14,11 @@ export class ScoreHelper extends MaterialRulesPart {
     return cards + tokens * 0.5
   }
 
+  getCardCount(player: PlayerColor): number {
+    return this.material(MaterialType.DejaVuCard)
+      .location(LocationType.PlayerPile).player(player).length
+  }
+
   getTokenCount(player: PlayerColor): number {
     return this.material(MaterialType.InstinctToken)
       .location(LocationType.PlayerTokenPile).player(player).length
