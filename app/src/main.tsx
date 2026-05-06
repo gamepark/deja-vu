@@ -11,6 +11,7 @@ import { Material } from './material/Material'
 import { scoring } from './Scoring'
 import { DejaVuLogs } from './history/DejaVuLogs'
 import { theme } from './theme'
+import { ai } from './AI'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -25,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
       scoring={scoring}
       logs={new DejaVuLogs()}
       theme={theme}
+      ai={ai}
     >
       <App />
     </GameProvider>
