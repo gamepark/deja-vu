@@ -1,5 +1,4 @@
 import { INSTINCT_WIN_THRESHOLD } from '@gamepark/deja-vu/GameConstants'
-import { PlayerColor } from '@gamepark/deja-vu/PlayerColor'
 import { ScoreHelper } from '@gamepark/deja-vu/rules/helper/ScoreHelper'
 import { ScoringDescription } from '@gamepark/react-game'
 import { GameOverHeader } from './headers/GameOverHeader'
@@ -9,7 +8,7 @@ const enum ScoringKey { Cards = 1, Tokens, Total }
 export const scoring: ScoringDescription = {
   getScoringKeys: (rules) => {
     const scoreHelper = new ScoreHelper(rules.game)
-    const isInstinctWin = (rules.game.players as PlayerColor[]).some(
+    const isInstinctWin = (rules.game.players as number[]).some(
       player => scoreHelper.getTokenCount(player) >= INSTINCT_WIN_THRESHOLD
     )
     return isInstinctWin ? [] : [ScoringKey.Cards, ScoringKey.Tokens, ScoringKey.Total]
@@ -23,8 +22,8 @@ export const scoring: ScoringDescription = {
 
   getScoringPlayerData: (key, player, rules) => {
     const scoreHelper = new ScoreHelper(rules.game)
-    const tokens = scoreHelper.getTokenCount(player as PlayerColor)
-    const score = scoreHelper.getScore(player as PlayerColor)
+    const tokens = scoreHelper.getTokenCount(player as number)
+    const score = scoreHelper.getScore(player as number)
     if (key === ScoringKey.Cards) return score - tokens * 0.5
     if (key === ScoringKey.Tokens) return tokens * 0.5
     return score

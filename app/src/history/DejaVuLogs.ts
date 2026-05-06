@@ -2,7 +2,6 @@ import { LogDescription, MoveComponentContext, MovePlayedLogDescription } from '
 import { isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '@gamepark/deja-vu/material/LocationType'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
-import { PlayerColor } from '@gamepark/deja-vu/PlayerColor'
 import { CustomMoveType } from '@gamepark/deja-vu/rules/CustomMoveType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
 import { FlipCardLog } from './FlipCardLog'
@@ -13,10 +12,10 @@ import { TakeEndCardLog } from './TakeEndCardLog'
 import { TerminateLog } from './TerminateLog'
 import { TokenTransferLog } from './TokenTransferLog'
 
-export class DejaVuLogs implements LogDescription<MaterialMove, PlayerColor, MaterialGame> {
+export class DejaVuLogs implements LogDescription<MaterialMove, number, MaterialGame> {
   getMovePlayedLogDescription(
     move: MaterialMove,
-    context: MoveComponentContext<MaterialMove, PlayerColor, MaterialGame>
+    context: MoveComponentContext<MaterialMove, number, MaterialGame>
   ): MovePlayedLogDescription | undefined {
     const ruleId = context.game.rule?.id
     const player = context.game.rule?.player
