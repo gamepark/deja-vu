@@ -12,6 +12,7 @@ import { scoring } from './Scoring'
 import { DejaVuLogs } from './history/DejaVuLogs'
 import { theme } from './theme'
 import { ai } from './AI'
+import { Tutorial } from './tutorial/Tutorial'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')!).render(
       logs={new DejaVuLogs()}
       theme={theme}
       ai={ai}
+      tutorial={new Tutorial()}
     >
       <App />
     </GameProvider>
