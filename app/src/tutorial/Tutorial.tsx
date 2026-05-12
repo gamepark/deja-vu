@@ -281,7 +281,6 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
     {
       popup: {
         text: () => <Trans i18nKey="tuto.terminate-result" components={C} />,
-        position: { x: 30, y: 5 }
       },
       focus: (game) => ({
         materials: [
@@ -296,7 +295,6 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
     {
       popup: {
         text: () => <Trans i18nKey="tuto.end-of-turn-2" components={C} />,
-        position: { x: 30, y: 5 }
       },
       move: {
         filter: (move) => isCustomMoveType(CustomMoveType.EndTurn)(move)

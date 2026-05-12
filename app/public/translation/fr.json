@@ -72,7 +72,7 @@
   "tuto.flip-one-more": "Encore une ! Retournez une autre carte avec un <bold>5</bold>.",
   "tuto.terminate": "Ces 3 cartes partagent toutes le chiffre <bold>5</bold> ! Vous pouvez <bold>Terminer</bold> pour les remporter dans votre pile.",
   "tuto.terminate-result": "Bravo ! Ces 3 cartes sont maintenant dans votre pile. Chacune vaut <bold>1 point</bold> en fin de partie.",
-  "tuto.end-of-turn-2": "Vous avez encore des jetons. Finissez votre tour — ou donnez un jeton pour rejouer !",
+  "tuto.end-of-turn-2": "Vous avez encore des jetons, vous pourriez rejouer, pour le moment finissez votre tour !",
   "tuto.bonus": "Astuce : si <bold>4 cartes ou plus</bold> partagent un même chiffre quand vous terminez, vous <bold>volez un jeton instinct</bold> à votre adversaire en bonus !",
   "tuto.end-card": "La <bold>carte Fin</bold> se trouve tout en bas du paquet. Quand elle arrive au sommet, vous pouvez la prendre pour déclencher le <bold>dernier tour</bold> de votre adversaire, puis les scores sont calculés.",
   "tuto.scoring": "<bold>Score :</bold> 1 point par carte dans votre pile + 0,5 point par jeton instinct.<br/>Si un joueur accumule <bold>7 jetons</bold>, il remporte la partie immédiatement !",
