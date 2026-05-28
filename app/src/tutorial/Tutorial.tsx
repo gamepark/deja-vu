@@ -174,7 +174,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
       }
     },
 
-    // ─── 9. Expliquer l'échec + attendre que l'adversaire finisse son tour ───
+    // ─── 9. Expliquer l'échec — le tour d'Alex se termine automatiquement ────
     {
       popup: {
         text: () => <Trans i18nKey="tuto.fail-result" components={C} />,
@@ -186,11 +186,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
             .location(LocationType.PlayerTokenPile).player(me)
         ],
         margin: { top: 2, bottom: 2, left: 2, right: 2 }
-      }),
-      move: {
-        player: opponent,
-        filter: (move) => isCustomMoveType(CustomMoveType.EndTurn)(move)
-      }
+      })
     },
 
     // ─── 10. Mon tour : utiliser ma mémoire — retourner Grid[3] ──────────────

@@ -108,6 +108,10 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
     return (this.backImages as Record<number, string>)[sum]
   }
 
+  getFrontImage(card: DejaVuCard): string | undefined {
+    return (this.images as Record<DejaVuCard, string>)[card]
+  }
+
   isMenuAlwaysVisible(item: MaterialItem): boolean {
     return item.location?.type === LocationType.PlayerShowCard
   }

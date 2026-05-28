@@ -13,10 +13,13 @@ export const RevealCardHeader = () => {
   const terminateMove = useLegalMove(isCustomMoveType(CustomMoveType.Terminate))
 
   if (itsMe) {
+    if (!terminateMove) {
+      return <Trans i18nKey="header.reveal.you.flip" />
+    }
     return <Trans
       i18nKey="header.reveal.you"
       components={{
-        terminate: <PlayMoveButton move={terminateMove!} />
+        terminate: <PlayMoveButton move={terminateMove} />
       }}
     />
   }

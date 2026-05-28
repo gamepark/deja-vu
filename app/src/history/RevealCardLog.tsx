@@ -14,7 +14,7 @@ export const RevealCardLog = ({ move, context }: MoveComponentProps<MaterialMove
     <Trans
       i18nKey="log.reveal"
       values={{ player }}
-      components={{ card: item ? <DejaVuCardChip item={item} /> : <span /> }}
+      components={{ card: item ? <DejaVuCardChip item={item} showFront /> : <span /> }}
     />
   )
 }

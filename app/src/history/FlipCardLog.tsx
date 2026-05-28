@@ -14,7 +14,7 @@ export const FlipCardLog = ({ move, context }: MoveComponentProps<MaterialMove>)
     <Trans
       i18nKey="log.flip"
       values={{ player }}
-      components={{ card: item ? <DejaVuCardChip item={item} /> : <span /> }}
+      components={{ card: item ? <DejaVuCardChip item={item} showFront /> : <span /> }}
     />
   )
 }

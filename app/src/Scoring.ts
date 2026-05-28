@@ -1,6 +1,8 @@
 import { INSTINCT_WIN_THRESHOLD } from '@gamepark/deja-vu/GameConstants'
 import { ScoreHelper } from '@gamepark/deja-vu/rules/helper/ScoreHelper'
 import { ScoringDescription } from '@gamepark/react-game'
+import { createElement } from 'react'
+import { Trans } from 'react-i18next'
 import { GameOverHeader } from './headers/GameOverHeader'
 
 const enum ScoringKey { Cards = 1, Tokens, Total }
@@ -15,9 +17,9 @@ export const scoring: ScoringDescription = {
   },
 
   getScoringHeader: (key) => {
-    if (key === ScoringKey.Cards) return 'Cartes'
-    if (key === ScoringKey.Tokens) return 'Jetons (×½)'
-    return 'Total'
+    if (key === ScoringKey.Cards) return createElement(Trans, { i18nKey: 'score.cards' })
+    if (key === ScoringKey.Tokens) return createElement(Trans, { i18nKey: 'score.tokens' })
+    return createElement(Trans, { i18nKey: 'score.total' })
   },
 
   getScoringPlayerData: (key, player, rules) => {

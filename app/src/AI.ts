@@ -32,6 +32,12 @@ export const ai = (game: MaterialGame, player: number): Promise<MaterialMove[]> 
 }
 
 function getPlayCardMove(moves: MaterialMove[]): MaterialMove {
+  const takeEndCardMove = moves.find(m =>
+    isMoveItemType(MaterialType.DejaVuCard)(m) &&
+    m.location.type === LocationType.PlayerPile
+  )
+  if (takeEndCardMove) return takeEndCardMove
+
   const flipMoves = moves.filter(m =>
     isMoveItemType(MaterialType.DejaVuCard)(m) &&
     (m.location.type === LocationType.Grid || m.location.type === LocationType.Deck) &&

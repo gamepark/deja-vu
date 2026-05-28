@@ -9,17 +9,12 @@ export const GameOverHeader = () => {
   const rankedPlayers = useRankedPlayers()
   const winner = rankedPlayers[0]
   const winnerName = usePlayerName(winner.id)
-  const isTie = rankedPlayers.length > 1 && rankedPlayers[1].rank === winner.rank
 
   const scoreHelper = new ScoreHelper(rules.game)
   const winnerTokenCount = scoreHelper.getTokenCount(winner.id as number)
 
-  if (!isTie && winnerTokenCount >= INSTINCT_WIN_THRESHOLD) {
+  if (winnerTokenCount >= INSTINCT_WIN_THRESHOLD) {
     return <Trans i18nKey="game.over.instinct" values={{ player: winnerName }} />
-  }
-
-  if (isTie) {
-    return <Trans i18nKey="game.over.tie" />
   }
 
   const score = scoreHelper.getScore(winner.id as number)
