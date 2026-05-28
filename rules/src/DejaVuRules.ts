@@ -1,4 +1,4 @@
-import { CompetitiveScore, isMoveItemType, MaterialGame, MaterialMove, MaterialRules, PositiveSequenceStrategy, TimeLimit } from '@gamepark/rules-api'
+import { CompetitiveScore, hideFrontToOthers, isMoveItemType, MaterialGame, MaterialItem, MaterialMove, PositiveSequenceStrategy, SecretMaterialRules, TimeLimit } from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ScoreHelper } from './rules/helper/ScoreHelper'
@@ -8,16 +8,27 @@ import { ObserveCardRule } from './rules/ObserveCardRule'
 import { PlayCardRule } from './rules/PlayCardRule'
 import { RevealCardRule } from './rules/RevealCardRule'
 
+const hideFlippedCardFront = (item: MaterialItem) =>
+  item.location.rotation !== false ? ['id.front'] : []
+
 /**
  * This class implements the rules of the board game.
  * It must follow Game Park "Rules" API so that the Game Park server can enforce the rules.
  */
 export class DejaVuRules
-  extends MaterialRules<number, MaterialType, LocationType>
+  extends SecretMaterialRules<number, MaterialType, LocationType>
   implements
     TimeLimit<MaterialGame<number, MaterialType, LocationType>, MaterialMove<number, MaterialType, LocationType>, number>,
     CompetitiveScore<MaterialGame<number, MaterialType, LocationType>, MaterialMove<number, MaterialType, LocationType>, number>
 {
+  hidingStrategies = {
+    [MaterialType.DejaVuCard]: {
+      [LocationType.Deck]: hideFlippedCardFront,
+      [LocationType.Grid]: hideFlippedCardFront,
+      [LocationType.PlayerShowCard]: hideFrontToOthers,
+    }
+  }
+
   rules = {
     [RuleId.PlayCard]: PlayCardRule,
     [RuleId.ObserveCard]: ObserveCardRule,
@@ -37,7 +48,8 @@ export class DejaVuRules
   }
 
   itemsCanMerge(type: MaterialType): boolean {
-    return type !== MaterialType.InstinctToken
+    if (type === MaterialType.InstinctToken) return false
+    return super.itemsCanMerge(type)
   }
 
   scoreHelper = new ScoreHelper(this.game)

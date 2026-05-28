@@ -1,5 +1,5 @@
 import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
-import { dejaVuCardsData, DejaVuCard, endCard } from '../material/DejaVuCard'
+import { dejaVuCardsData, DejaVuCard, DejaVuCardId, endCard } from '../material/DejaVuCard'
 import { BONUS_TOKEN_THRESHOLD, INSTINCT_WIN_THRESHOLD, TERMINATE_MIN_OCCURRENCES } from '../GameConstants'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -33,7 +33,7 @@ export class RevealCardRule extends PlayerTurnRule {
     const newCard = allItems[move.itemIndex]
     if (!newCard?.id) return []
 
-    if (!this.isRevealValid(move.itemIndex, newCard.id as DejaVuCard, allItems)) {
+    if (!this.isRevealValid(move.itemIndex, (newCard.id as DejaVuCardId).front, allItems)) {
       return this.failureMoves()
     }
 
@@ -70,7 +70,7 @@ export class RevealCardRule extends PlayerTurnRule {
 
     if (previousFaceUp.length === 0) return true
 
-    const prevCommon = this.intersectNumbers(previousFaceUp.map(({ item }) => item.id as DejaVuCard))
+    const prevCommon = this.intersectNumbers(previousFaceUp.map(({ item }) => (item.id as DejaVuCardId).front))
     if (prevCommon.length === 0) return true
 
     return dejaVuCardsData[newCardId].some(n => prevCommon.includes(n))
@@ -81,8 +81,6 @@ export class RevealCardRule extends PlayerTurnRule {
       ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false).rotateItems(true),
       ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false).rotateItems(true)
     ]
-    const tokensBefore = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(this.player).length
     const opponentTokensBefore = this.material(MaterialType.InstinctToken)
       .location(LocationType.PlayerTokenPile).player(this.nextPlayer).length
     const tokenToGive = this.material(MaterialType.InstinctToken)
@@ -93,16 +91,16 @@ export class RevealCardRule extends PlayerTurnRule {
     const opponentTokensAfter = opponentTokensBefore + (tokenMoves.length > 0 ? 1 : 0)
     const endMove = opponentTokensAfter >= INSTINCT_WIN_THRESHOLD
       ? this.endGame()
-      : (tokensBefore - (tokenMoves.length > 0 ? 1 : 0)) > 0 ? this.startRule(RuleId.EndOfTurn) : new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)
+      : new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)
     return [...flipMoves, ...tokenMoves, endMove]
   }
 
   private collectFaceUpCards(): { collectMoves: MaterialMove[], faceUpIds: DejaVuCard[], emptyPositions: number[] } {
     const faceUpGridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false)
     const faceUpDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false)
-    const faceUpIds = [
-      ...faceUpGridCards.getItems().map(item => item.id as DejaVuCard),
-      ...faceUpDeckCard.getItems().map(item => item.id as DejaVuCard)
+    const faceUpIds: DejaVuCard[] = [
+      ...faceUpGridCards.getItems().map(item => (item.id as DejaVuCardId).front),
+      ...faceUpDeckCard.getItems().map(item => (item.id as DejaVuCardId).front)
     ]
     const emptyPositions = faceUpGridCards.getItems().map(item => item.location.x!)
     const collectMoves: MaterialMove[] = [
@@ -119,7 +117,7 @@ export class RevealCardRule extends PlayerTurnRule {
       .getIndexes()
       .filter(i => {
         const item = (this.game.items[MaterialType.DejaVuCard] ?? [])[i]
-        return item?.id !== endCard && item?.location.rotation === true
+        return (item?.id as DejaVuCardId)?.front !== endCard && item?.location.rotation === true
       })
 
     return emptyPositions.slice(0, deckIndexes.length).map((x, i) =>
@@ -142,14 +140,14 @@ export class RevealCardRule extends PlayerTurnRule {
   }
 
   private get canTerminate(): boolean {
-    return this.countCommonOccurrences(this.faceUpTableCards.map(item => item.id as DejaVuCard)) >= TERMINATE_MIN_OCCURRENCES
+    return this.countCommonOccurrences(this.faceUpTableCardIds) >= TERMINATE_MIN_OCCURRENCES
   }
 
-  private get faceUpTableCards() {
+  private get faceUpTableCardIds(): DejaVuCard[] {
     return [
       ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false).getItems(),
       ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false).getItems()
-    ]
+    ].map(item => (item.id as DejaVuCardId).front)
   }
 
   private countCommonOccurrences(cardIds: DejaVuCard[]): number {

@@ -1,5 +1,7 @@
 import { getEnumValues } from '@gamepark/rules-api'
 
+export type DejaVuCardId = { front: DejaVuCard, back: number }
+
 export enum DejaVuCard {
   card02 = 1,
   card03,
@@ -74,4 +76,9 @@ export const dejaVuCardsData: Record<DejaVuCard, number[]> = {
   [DejaVuCard.card57]: [5, 7],
   [DejaVuCard.card66]: [6, 6],
   [DejaVuCard.cardEnd]: [0, 0],
+}
+
+export function cardBack(card: DejaVuCard): number {
+  const [a, b] = dejaVuCardsData[card]
+  return a + b
 }

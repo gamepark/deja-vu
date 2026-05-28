@@ -1,10 +1,20 @@
 import { isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
-import { endCard } from '../material/DejaVuCard'
+import { DejaVuCardId, endCard } from '../material/DejaVuCard'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { RuleId } from './RuleId'
+import { EndGameHelper } from './helper/EndGameHelper'
 
 export class PlayCardRule extends PlayerTurnRule {
+  onRuleStart(): MaterialMove[] {
+    const gridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid)
+    const deckCards = this.material(MaterialType.DejaVuCard).location(LocationType.Deck)
+    if (gridCards.length === 0 && deckCards.length === 0) {
+      return [new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)]
+    }
+    return []
+  }
+
   getPlayerMoves(): MaterialMove[] {
     const moves: MaterialMove[] = []
     const gridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid)
@@ -13,7 +23,7 @@ export class PlayCardRule extends PlayerTurnRule {
       .maxBy(item => item.location.x ?? 0)
 
     // Drag-drop de la carte Fin vers la pile si elle est au sommet du deck
-    if (topDeckCard.length && topDeckCard.getItem()?.id === endCard) {
+    if (topDeckCard.length && (topDeckCard.getItem()?.id as DejaVuCardId)?.front === endCard) {
       moves.push(topDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player }))
     }
 
@@ -24,13 +34,13 @@ export class PlayCardRule extends PlayerTurnRule {
       rotation: false,
       id: item.location.x
     })))
-    if (topDeckCard.length) {
+    if (topDeckCard.length && (topDeckCard.getItem()?.id as DejaVuCardId)?.front !== endCard) {
       moves.push(topDeckCard.moveItem({ type: LocationType.PlayerShowCard, player: this.player, rotation: false }))
     }
 
     // Retourner: retourner la carte sur place (rotation false)
     moves.push(...gridCards.rotateItems(false))
-    if (topDeckCard.length) {
+    if (topDeckCard.length && (topDeckCard.getItem()?.id as DejaVuCardId)?.front !== endCard) {
       moves.push(topDeckCard.rotateItem(false))
     }
 

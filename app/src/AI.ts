@@ -1,5 +1,5 @@
 import { DejaVuRules } from '@gamepark/deja-vu/DejaVuRules'
-import { DejaVuCard, dejaVuCardsData } from '@gamepark/deja-vu/material/DejaVuCard'
+import { DejaVuCard, DejaVuCardId, dejaVuCardsData } from '@gamepark/deja-vu/material/DejaVuCard'
 import { LocationType } from '@gamepark/deja-vu/material/LocationType'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { CustomMoveType } from '@gamepark/deja-vu/rules/CustomMoveType'
@@ -66,7 +66,7 @@ function getRevealCardMove(game: MaterialGame, moves: MaterialMove[]): MaterialM
 
   if (faceUpCards.length === 0) return sample(flipMoves)!
 
-  const commonNumbers = intersectNumbers(faceUpCards.map(item => item.id as DejaVuCard))
+  const commonNumbers = intersectNumbers(faceUpCards.map(item => (item.id as DejaVuCardId).front))
   if (commonNumbers.length === 0) return sample(flipMoves)!
 
   // Sometimes make a mistake and flip a non-matching card (simulates forgetting)
@@ -77,7 +77,7 @@ function getRevealCardMove(game: MaterialGame, moves: MaterialMove[]): MaterialM
     if (!isMoveItemType(MaterialType.DejaVuCard)(m)) return false
     const card = allCards[m.itemIndex]
     if (!card?.id) return false
-    return dejaVuCardsData[card.id as DejaVuCard].some(n => commonNumbers.includes(n))
+    return dejaVuCardsData[(card.id as DejaVuCardId).front].some(n => commonNumbers.includes(n))
   })
 
   return matchingMoves.length > 0 ? sample(matchingMoves)! : sample(flipMoves)!

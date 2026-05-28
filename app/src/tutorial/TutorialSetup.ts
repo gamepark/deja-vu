@@ -1,5 +1,5 @@
 import { DejaVuSetup } from '@gamepark/deja-vu/DejaVuSetup'
-import { DejaVuCard } from '@gamepark/deja-vu/material/DejaVuCard'
+import { cardBack, DejaVuCard } from '@gamepark/deja-vu/material/DejaVuCard'
 import { LocationType } from '@gamepark/deja-vu/material/LocationType'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
@@ -31,13 +31,13 @@ export class TutorialSetup extends DejaVuSetup {
       [DejaVuCard.card37, 6],
       [DejaVuCard.card23, 7],
     ]
-    for (const [id, x] of gridCards) {
-      this.material(MaterialType.DejaVuCard).createItem({ id, location: { type: LocationType.Grid, x, rotation: true } })
+    for (const [card, x] of gridCards) {
+      this.material(MaterialType.DejaVuCard).createItem({ id: { front: card, back: cardBack(card) }, location: { type: LocationType.Grid, x, rotation: true } })
     }
 
     // Deck — carte Fin tout en bas (x=0), les autres cartes face cachée au-dessus
     this.material(MaterialType.DejaVuCard).createItem({
-      id: DejaVuCard.cardEnd,
+      id: { front: DejaVuCard.cardEnd, back: 0 },
       location: { type: LocationType.Deck, x: 0 }
     })
     const deckCards: DejaVuCard[] = [
@@ -47,9 +47,9 @@ export class TutorialSetup extends DejaVuSetup {
       DejaVuCard.card27, DejaVuCard.card33, DejaVuCard.card34, DejaVuCard.card36, DejaVuCard.card44,
       DejaVuCard.card46, DejaVuCard.card55, DejaVuCard.card56, DejaVuCard.card66,
     ]
-    deckCards.forEach((id, i) => {
+    deckCards.forEach((card, i) => {
       this.material(MaterialType.DejaVuCard).createItem({
-        id,
+        id: { front: card, back: cardBack(card) },
         location: { type: LocationType.Deck, x: i + 1, rotation: true }
       })
     })

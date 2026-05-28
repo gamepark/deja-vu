@@ -1,5 +1,5 @@
 import { LocationType } from '@gamepark/deja-vu/material/LocationType'
-import { DejaVuCard } from '@gamepark/deja-vu/material/DejaVuCard.ts'
+import { DejaVuCard, DejaVuCardId } from '@gamepark/deja-vu/material/DejaVuCard.ts'
 import { DejaVuCardHelp } from './help/DejaVuCardHelp'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
@@ -55,7 +55,7 @@ import Back10 from "../images/cards/Back10.jpg"
 import Back11 from "../images/cards/Back11.jpg"
 import Back12 from "../images/cards/Back12.jpg"
 
-class DejaVuCardDescription extends CardDescription<number, number, number, DejaVuCard> {
+class DejaVuCardDescription extends CardDescription<number, number, number, DejaVuCardId> {
   width = 6.3
   height = 8.8
   borderRadius = 0.3
@@ -95,42 +95,17 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
     [DejaVuCard.card57]: Front57,
     [DejaVuCard.card66]: Front66,
     [DejaVuCard.cardEnd]: CardEnd,
-  }
+  } as any
 
+  // indexed by sum (back value): 0 = carte Fin, 2–12 = cartes normales
   backImages = {
-    [DejaVuCard.card02]: Back02,
-    [DejaVuCard.card03]: Back03,
-    [DejaVuCard.card04]: Back04,
-    [DejaVuCard.card05]: Back05,
-    [DejaVuCard.card06]: Back06,
-    [DejaVuCard.card07]: Back07,
-    [DejaVuCard.card11]: Back02,
-    [DejaVuCard.card12]: Back03,
-    [DejaVuCard.card13]: Back04,
-    [DejaVuCard.card14]: Back05,
-    [DejaVuCard.card15]: Back06,
-    [DejaVuCard.card16]: Back07,
-    [DejaVuCard.card17]: Back08,
-    [DejaVuCard.card22]: Back04,
-    [DejaVuCard.card23]: Back05,
-    [DejaVuCard.card24]: Back06,
-    [DejaVuCard.card25]: Back07,
-    [DejaVuCard.card26]: Back08,
-    [DejaVuCard.card27]: Back09,
-    [DejaVuCard.card33]: Back06,
-    [DejaVuCard.card34]: Back07,
-    [DejaVuCard.card35]: Back08,
-    [DejaVuCard.card36]: Back09,
-    [DejaVuCard.card37]: Back10,
-    [DejaVuCard.card44]: Back08,
-    [DejaVuCard.card45]: Back09,
-    [DejaVuCard.card46]: Back10,
-    [DejaVuCard.card47]: Back11,
-    [DejaVuCard.card55]: Back10,
-    [DejaVuCard.card56]: Back11,
-    [DejaVuCard.card57]: Back12,
-    [DejaVuCard.card66]: Back12,
-    [DejaVuCard.cardEnd]: CardEnd,
+    0: CardEnd,
+    2: Back02, 3: Back03, 4: Back04, 5: Back05, 6: Back06, 7: Back07,
+    8: Back08, 9: Back09, 10: Back10, 11: Back11, 12: Back12,
+  } as any
+
+  getBackImageBySum(sum: number): string | undefined {
+    return (this.backImages as Record<number, string>)[sum]
   }
 
   isMenuAlwaysVisible(item: MaterialItem): boolean {
