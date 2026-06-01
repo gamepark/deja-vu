@@ -17,12 +17,7 @@ export class DejaVuSetup extends MaterialGameSetup<number, MaterialType, Locatio
     this.material(MaterialType.DejaVuCard).createItem({ id: { front: endCard, back: endCard }, location: { type: LocationType.Deck } })
     this.material(MaterialType.DejaVuCard).createItems(shuffle(dejaVuCards).map((card) => ({ id: { front: card, back: cardBack(card) }, location: { type: LocationType.Deck } })))
 
-    for (let i = 0; i < 8; i++) {
-      this.material(MaterialType.DejaVuCard)
-        .location(LocationType.Deck)
-        .maxBy((item) => item.location.x ?? 0)
-        .moveItems({ type: LocationType.Grid, x: i })
-    }
+    this.material(MaterialType.DejaVuCard).deck().deal({ type: LocationType.Grid }, 8)
 
     this.material(MaterialType.InstinctToken).createItems([
       ...Array.from({ length: 3 }, () => ({ location: { type: LocationType.PlayerTokenPile, player: this.players[0] } })),

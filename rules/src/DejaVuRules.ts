@@ -1,4 +1,4 @@
-import { CompetitiveScore, hideFrontToOthers, isMoveItemType, MaterialGame, MaterialItem, MaterialMove, PositiveSequenceStrategy, SecretMaterialRules, TimeLimit } from '@gamepark/rules-api'
+import { CompetitiveScore, FillGapStrategy, hideFrontToOthers, isMoveItemType, MaterialGame, MaterialItem, MaterialMove, PositiveSequenceStrategy, SecretMaterialRules, TimeLimit } from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ScoreHelper } from './rules/helper/ScoreHelper'
@@ -39,6 +39,7 @@ export class DejaVuRules
   locationsStrategies = {
     [MaterialType.DejaVuCard]: {
       [LocationType.Deck]: new PositiveSequenceStrategy(),
+      [LocationType.Grid]: new FillGapStrategy(),
     },
   }
 

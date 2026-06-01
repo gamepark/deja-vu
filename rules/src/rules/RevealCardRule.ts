@@ -44,8 +44,8 @@ export class RevealCardRule extends PlayerTurnRule {
   onCustomMove(move: CustomMove): MaterialMove[] {
     if (!isCustomMoveType(CustomMoveType.Terminate)(move)) return []
 
-    const { collectMoves, faceUpIds, emptyPositions } = this.collectFaceUpCards()
-    const refillMoves = this.refillGrid(emptyPositions)
+    const { collectMoves, faceUpIds, gridCount } = this.collectFaceUpCards()
+    const refillMoves = this.refillGrid(gridCount)
     const bonusMove = this.bonusTokenMove(faceUpIds)
 
     const tokensBefore = this.material(MaterialType.InstinctToken)
@@ -96,34 +96,29 @@ export class RevealCardRule extends PlayerTurnRule {
     return [...flipMoves, ...tokenMoves, endMove]
   }
 
-  private collectFaceUpCards(): { collectMoves: MaterialMove[], faceUpIds: DejaVuCard[], emptyPositions: number[] } {
+  private collectFaceUpCards(): { collectMoves: MaterialMove[], faceUpIds: DejaVuCard[], gridCount: number } {
     const faceUpGridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true)
     const faceUpDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true)
     const faceUpIds: DejaVuCard[] = [
       ...faceUpGridCards.getItems().map(item => (item.id as DejaVuCardId).front),
       ...faceUpDeckCard.getItems().map(item => (item.id as DejaVuCardId).front)
     ]
-    const emptyPositions = faceUpGridCards.getItems().map(item => item.location.x!)
     const collectMoves: MaterialMove[] = [
       ...faceUpGridCards.moveItems({ type: LocationType.PlayerPile, player: this.player }),
       ...(faceUpDeckCard.length ? [faceUpDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player })] : [])
     ]
-    return { collectMoves, faceUpIds, emptyPositions }
+    return { collectMoves, faceUpIds, gridCount: faceUpGridCards.length }
   }
 
-  private refillGrid(emptyPositions: number[]): MaterialMove[] {
-    const deckIndexes = this.material(MaterialType.DejaVuCard)
+  // Deal hidden deck cards (top first, excluding the End card) onto the Grid;
+  // FillGapStrategy assigns each one to the lowest free position.
+  private refillGrid(count: number): MaterialMove[] {
+    return this.material(MaterialType.DejaVuCard)
       .location(LocationType.Deck)
-      .sort(item => -(item.location.x ?? 0))
-      .getIndexes()
-      .filter(i => {
-        const item = (this.game.items[MaterialType.DejaVuCard] ?? [])[i]
-        return (item?.id as DejaVuCardId)?.front !== endCard && !item?.location.rotation
-      })
-
-    return emptyPositions.slice(0, deckIndexes.length).map((x, i) =>
-      this.material(MaterialType.DejaVuCard).index(deckIndexes[i]).moveItem({ type: LocationType.Grid, x })
-    )
+      .rotation(r => !r)
+      .id<DejaVuCardId>(id => id.front !== endCard)
+      .deck()
+      .deal({ type: LocationType.Grid }, count)
   }
 
   private bonusTokenMove(faceUpIds: DejaVuCard[]): MaterialMove | undefined {
