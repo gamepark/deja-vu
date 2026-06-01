@@ -8,7 +8,6 @@
   "header.play-card.end-card.you": "Observez ou retournez une carte <take>Prendre la carte Fin</take>",
   "game.over.instinct": "{player} gagne par instinct !",
   "game.over.winner": "{player} remporte la partie avec {score} points !",
-  "game.over.tie": "Égalité !",
   "header.play-card.player": "{player} choisit son action",
   "header.observe-card.you": "Remettez la carte observée en place",
   "header.observe-card.player": "{player} observe une carte",
