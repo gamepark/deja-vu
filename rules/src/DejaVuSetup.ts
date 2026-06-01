@@ -14,7 +14,7 @@ export class DejaVuSetup extends MaterialGameSetup<number, MaterialType, Locatio
   Rules = DejaVuRules
 
   setupMaterial(_options: DejaVuOptions) {
-    this.material(MaterialType.DejaVuCard).createItem({ id: { front: endCard, back: 0 }, location: { type: LocationType.Deck } })
+    this.material(MaterialType.DejaVuCard).createItem({ id: { front: endCard, back: endCard }, location: { type: LocationType.Deck } })
     this.material(MaterialType.DejaVuCard).createItems(shuffle(dejaVuCards).map((card) => ({ id: { front: card, back: cardBack(card) }, location: { type: LocationType.Deck, rotation: true } })))
 
     for (let i = 0; i < 8; i++) {
