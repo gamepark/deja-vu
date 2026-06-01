@@ -1,3 +1,2 @@
-export const INSTINCT_WIN_THRESHOLD = 7
 export const TERMINATE_MIN_OCCURRENCES = 3
 export const BONUS_TOKEN_THRESHOLD = 4

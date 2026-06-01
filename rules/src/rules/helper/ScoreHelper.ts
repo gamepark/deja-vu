@@ -1,15 +1,12 @@
 import { MaterialRulesPart } from '@gamepark/rules-api'
-import { INSTINCT_WIN_THRESHOLD } from '../../GameConstants'
 import { LocationType } from '../../material/LocationType'
 import { MaterialType } from '../../material/MaterialType'
 
 export class ScoreHelper extends MaterialRulesPart {
   getScore(player: number): number {
-    const tokens = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(player).length
-    if (tokens >= INSTINCT_WIN_THRESHOLD) return 1000
-    const cards = this.material(MaterialType.DejaVuCard)
-      .location(LocationType.PlayerPile).player(player).length
+    if (this.hasAllTokens(player)) return 1000
+    const tokens = this.getTokenCount(player)
+    const cards = this.getCardCount(player)
     return cards + tokens * 0.5
   }
 
@@ -20,6 +17,14 @@ export class ScoreHelper extends MaterialRulesPart {
 
   getTokenCount(player: number): number {
     return this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(player).length
+      .location(LocationType.PlayerTokenPile).player(player).getQuantity()
+  }
+
+  /** A player wins instantly when they hold every instinct token, i.e. no opponent has any. */
+  hasAllTokens(player: number): boolean {
+    return this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile)
+      .player(p => p !== player)
+      .getQuantity() === 0
   }
 }

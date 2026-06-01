@@ -1,6 +1,6 @@
 import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
 import { dejaVuCardsData, DejaVuCard, DejaVuCardId, endCard } from '../material/DejaVuCard'
-import { BONUS_TOKEN_THRESHOLD, INSTINCT_WIN_THRESHOLD, TERMINATE_MIN_OCCURRENCES } from '../GameConstants'
+import { BONUS_TOKEN_THRESHOLD, TERMINATE_MIN_OCCURRENCES } from '../GameConstants'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
@@ -48,15 +48,16 @@ export class RevealCardRule extends PlayerTurnRule {
     const refillMoves = this.refillGrid(gridCount)
     const bonusMove = this.bonusTokenMove(faceUpIds)
 
-    const tokensBefore = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(this.player).length
-    const tokensAfter = tokensBefore + (bonusMove ? 1 : 0)
+    // The bonus steals a token from the opponent: the player wins if it was their last one.
+    const opponentTokensAfter = this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile).player(this.nextPlayer).getQuantity() - (bonusMove ? 1 : 0)
+    const endMove = opponentTokensAfter === 0 ? this.endGame() : this.startRule(RuleId.EndOfTurn)
 
     return [
       ...collectMoves,
       ...refillMoves,
       ...(bonusMove ? [bonusMove] : []),
-      this.endMoveAfterTokenChange(tokensAfter)
+      endMove
     ]
   }
 
@@ -82,15 +83,15 @@ export class RevealCardRule extends PlayerTurnRule {
       ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).rotateItems(undefined),
       ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true).rotateItems(undefined)
     ]
-    const opponentTokensBefore = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(this.nextPlayer).length
-    const tokenToGive = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(this.player).getIndexes()
-    const tokenMoves = tokenToGive.length > 0
-      ? [this.material(MaterialType.InstinctToken).index(tokenToGive[0]).moveItem({ type: LocationType.PlayerTokenPile, player: this.nextPlayer })]
+    const playerTokens = this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile).player(this.player)
+    const givesToken = playerTokens.getQuantity() > 0
+    const tokenMoves = givesToken
+      ? [playerTokens.moveItem({ type: LocationType.PlayerTokenPile, player: this.nextPlayer }, 1)]
       : []
-    const opponentTokensAfter = opponentTokensBefore + (tokenMoves.length > 0 ? 1 : 0)
-    const endMove = opponentTokensAfter >= INSTINCT_WIN_THRESHOLD
+    // Giving away the last token hands every token to the opponent, who wins.
+    const playerLosesLastToken = playerTokens.getQuantity() - (givesToken ? 1 : 0) === 0
+    const endMove = playerLosesLastToken
       ? this.endGame()
       : new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)
     return [...flipMoves, ...tokenMoves, endMove]
@@ -124,15 +125,9 @@ export class RevealCardRule extends PlayerTurnRule {
   private bonusTokenMove(faceUpIds: DejaVuCard[]): MaterialMove | undefined {
     if (this.countCommonOccurrences(faceUpIds) < BONUS_TOKEN_THRESHOLD) return undefined
     const opponentTokens = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(this.nextPlayer).getIndexes()
-    if (opponentTokens.length === 0) return undefined
-    return this.material(MaterialType.InstinctToken).index(opponentTokens[0])
-      .moveItem({ type: LocationType.PlayerTokenPile, player: this.player })
-  }
-
-  private endMoveAfterTokenChange(tokensAfter: number): MaterialMove {
-    if (tokensAfter >= INSTINCT_WIN_THRESHOLD) return this.endGame()
-    return tokensAfter > 0 ? this.startRule(RuleId.EndOfTurn) : new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)
+      .location(LocationType.PlayerTokenPile).player(this.nextPlayer)
+    if (opponentTokens.getQuantity() === 0) return undefined
+    return opponentTokens.moveItem({ type: LocationType.PlayerTokenPile, player: this.player }, 1)
   }
 
   private get canTerminate(): boolean {

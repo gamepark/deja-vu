@@ -55,12 +55,10 @@ export class TutorialSetup extends DejaVuSetup {
     })
 
     // Jetons : joueur 1 = 3, joueur 2 = 4
-    this.material(MaterialType.InstinctToken).createItems(
-      Array.from({ length: 3 }, () => ({ location: { type: LocationType.PlayerTokenPile, player: me } }))
-    )
-    this.material(MaterialType.InstinctToken).createItems(
-      Array.from({ length: 4 }, () => ({ location: { type: LocationType.PlayerTokenPile, player: opponent } }))
-    )
+    this.material(MaterialType.InstinctToken).createItems([
+      { quantity: 3, location: { type: LocationType.PlayerTokenPile, player: me } },
+      { quantity: 4, location: { type: LocationType.PlayerTokenPile, player: opponent } }
+    ])
   }
 
   start() {

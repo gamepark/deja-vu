@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { INSTINCT_WIN_THRESHOLD } from '@gamepark/deja-vu/GameConstants'
 import { ScoreHelper } from '@gamepark/deja-vu/rules/helper/ScoreHelper'
 import { usePlayerName, useRankedPlayers, useRules } from '@gamepark/react-game'
 import { Trans } from 'react-i18next'
@@ -11,9 +10,8 @@ export const GameOverHeader = () => {
   const winnerName = usePlayerName(winner.id)
 
   const scoreHelper = new ScoreHelper(rules.game)
-  const winnerTokenCount = scoreHelper.getTokenCount(winner.id as number)
 
-  if (winnerTokenCount >= INSTINCT_WIN_THRESHOLD) {
+  if (scoreHelper.hasAllTokens(winner.id as number)) {
     return <Trans i18nKey="game.over.instinct" values={{ player: winnerName }} />
   }
 

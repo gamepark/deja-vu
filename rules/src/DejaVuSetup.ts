@@ -20,8 +20,8 @@ export class DejaVuSetup extends MaterialGameSetup<number, MaterialType, Locatio
     this.material(MaterialType.DejaVuCard).deck().deal({ type: LocationType.Grid }, 8)
 
     this.material(MaterialType.InstinctToken).createItems([
-      ...Array.from({ length: 3 }, () => ({ location: { type: LocationType.PlayerTokenPile, player: this.players[0] } })),
-      ...Array.from({ length: 4 }, () => ({ location: { type: LocationType.PlayerTokenPile, player: this.players[1] } }))
+      { quantity: 3, location: { type: LocationType.PlayerTokenPile, player: this.players[0] } },
+      { quantity: 4, location: { type: LocationType.PlayerTokenPile, player: this.players[1] } }
     ])
   }
 

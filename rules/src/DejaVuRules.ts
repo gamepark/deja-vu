@@ -48,11 +48,6 @@ export class DejaVuRules
     return super.moveBlocksUndo(move, player)
   }
 
-  itemsCanMerge(type: MaterialType): boolean {
-    if (type === MaterialType.InstinctToken) return false
-    return super.itemsCanMerge(type)
-  }
-
   scoreHelper = new ScoreHelper(this.game)
 
   getScore(player: number): number {

@@ -23,7 +23,7 @@ export class ObserveCardRule extends PlayerTurnRule {
     if (!isMoveItemType(MaterialType.DejaVuCard)(move)) return []
     if (move.location.type === LocationType.Grid || move.location.type === LocationType.Deck) {
       const hasTokens = this.material(MaterialType.InstinctToken)
-        .location(LocationType.PlayerTokenPile).player(this.player).length > 0
+        .location(LocationType.PlayerTokenPile).player(this.player).getQuantity() > 0
       return [hasTokens ? this.startRule(RuleId.EndOfTurn) : new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)]
     }
     return []

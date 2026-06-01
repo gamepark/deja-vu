@@ -1,5 +1,4 @@
 import { CustomMove, isCustomMoveType, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
-import { INSTINCT_WIN_THRESHOLD } from '../GameConstants'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
@@ -19,13 +18,12 @@ export class EndOfTurnRule extends PlayerTurnRule {
       return [new EndGameHelper(this.game).nextPlayerOrEnd(this.nextPlayer)]
     }
     if (isCustomMoveType(CustomMoveType.GiveTokenToReplay)(move)) {
-      const tokens = this.material(MaterialType.InstinctToken)
-        .location(LocationType.PlayerTokenPile).player(this.player).getIndexes()
-      const opponentTokensBefore = this.material(MaterialType.InstinctToken)
-        .location(LocationType.PlayerTokenPile).player(this.nextPlayer).length
-      const tokenMove = this.material(MaterialType.InstinctToken).index(tokens[0])
-        .moveItem({ type: LocationType.PlayerTokenPile, player: this.nextPlayer })
-      if (opponentTokensBefore + 1 >= INSTINCT_WIN_THRESHOLD) {
+      const playerTokens = this.material(MaterialType.InstinctToken)
+        .location(LocationType.PlayerTokenPile).player(this.player)
+      const playerCount = playerTokens.getQuantity()
+      const tokenMove = playerTokens.moveItem({ type: LocationType.PlayerTokenPile, player: this.nextPlayer }, 1)
+      // Giving away the last token hands every token to the opponent, who wins.
+      if (playerCount === 1) {
         return [tokenMove, this.endGame()]
       }
       return [tokenMove, this.startRule(RuleId.PlayCard)]

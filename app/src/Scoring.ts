@@ -1,4 +1,3 @@
-import { INSTINCT_WIN_THRESHOLD } from '@gamepark/deja-vu/GameConstants'
 import { ScoreHelper } from '@gamepark/deja-vu/rules/helper/ScoreHelper'
 import { ScoringDescription } from '@gamepark/react-game'
 import { createElement } from 'react'
@@ -11,7 +10,7 @@ export const scoring: ScoringDescription = {
   getScoringKeys: (rules) => {
     const scoreHelper = new ScoreHelper(rules.game)
     const isInstinctWin = (rules.game.players as number[]).some(
-      player => scoreHelper.getTokenCount(player) >= INSTINCT_WIN_THRESHOLD
+      player => scoreHelper.hasAllTokens(player)
     )
     return isInstinctWin ? [] : [ScoringKey.Cards, ScoringKey.Tokens, ScoringKey.Total]
   },
