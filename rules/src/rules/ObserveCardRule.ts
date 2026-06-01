@@ -14,9 +14,9 @@ export class ObserveCardRule extends PlayerTurnRule {
 
     const item = showCard.getItem()!
     if (item.location.id !== undefined) {
-      return [showCard.moveItem({ type: LocationType.Grid, x: item.location.id, rotation: true })]
+      return [showCard.moveItem({ type: LocationType.Grid, x: item.location.id })]
     }
-    return [showCard.moveItem({ type: LocationType.Deck, rotation: true })]
+    return [showCard.moveItem({ type: LocationType.Deck })]
   }
 
   afterItemMove(move: ItemMove): MaterialMove[] {

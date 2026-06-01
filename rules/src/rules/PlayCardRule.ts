@@ -31,17 +31,17 @@ export class PlayCardRule extends PlayerTurnRule {
     moves.push(...gridCards.moveItems(item => ({
       type: LocationType.PlayerShowCard,
       player: this.player,
-      rotation: false,
+      rotation: true,
       id: item.location.x
     })))
     if (topDeckCard.length && (topDeckCard.getItem()?.id as DejaVuCardId)?.front !== endCard) {
-      moves.push(topDeckCard.moveItem({ type: LocationType.PlayerShowCard, player: this.player, rotation: false }))
+      moves.push(topDeckCard.moveItem({ type: LocationType.PlayerShowCard, player: this.player, rotation: true }))
     }
 
-    // Retourner: retourner la carte sur place (rotation false)
-    moves.push(...gridCards.rotateItems(false))
+    // Retourner: révéler la carte sur place (rotation true)
+    moves.push(...gridCards.rotateItems(true))
     if (topDeckCard.length && (topDeckCard.getItem()?.id as DejaVuCardId)?.front !== endCard) {
-      moves.push(topDeckCard.rotateItem(false))
+      moves.push(topDeckCard.rotateItem(true))
     }
 
     return moves

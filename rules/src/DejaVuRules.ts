@@ -9,7 +9,7 @@ import { PlayCardRule } from './rules/PlayCardRule'
 import { RevealCardRule } from './rules/RevealCardRule'
 
 const hideFlippedCardFront = (item: MaterialItem) =>
-  item.location.rotation !== false ? ['id.front'] : []
+  !item.location.rotation ? ['id.front'] : []
 
 /**
  * This class implements the rules of the board game.
@@ -43,7 +43,7 @@ export class DejaVuRules
   }
 
   protected override moveBlocksUndo(move: MaterialMove<number, MaterialType, LocationType>, player?: number): boolean {
-    if (isMoveItemType(MaterialType.DejaVuCard)(move) && move.location.rotation === false) return true
+    if (isMoveItemType(MaterialType.DejaVuCard)(move) && move.location.rotation === true) return true
     return super.moveBlocksUndo(move, player)
   }
 

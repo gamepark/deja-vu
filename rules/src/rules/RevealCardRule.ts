@@ -11,11 +11,12 @@ export class RevealCardRule extends PlayerTurnRule {
   getPlayerMoves(): MaterialMove[] {
     const moves: MaterialMove[] = []
 
-    moves.push(...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).rotateItems(false))
+    moves.push(...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(r => !r).rotateItems(true))
 
     const topDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).maxBy(item => item.location.x ?? 0)
-    if (topDeckCard.length && topDeckCard.getItem()?.location.rotation === true) {
-      moves.push(topDeckCard.rotateItem(false))
+    const topDeckItem = topDeckCard.getItem()
+    if (topDeckCard.length && !topDeckItem?.location.rotation && (topDeckItem?.id as DejaVuCardId)?.front !== endCard) {
+      moves.push(topDeckCard.rotateItem(true))
     }
 
     if (this.canTerminate) {
@@ -27,7 +28,7 @@ export class RevealCardRule extends PlayerTurnRule {
 
   afterItemMove(move: ItemMove): MaterialMove[] {
     if (!isMoveItemType(MaterialType.DejaVuCard)(move)) return []
-    if (move.location.rotation !== false) return []
+    if (move.location.rotation !== true) return []
 
     const allItems = this.game.items[MaterialType.DejaVuCard] ?? []
     const newCard = allItems[move.itemIndex]
@@ -65,7 +66,7 @@ export class RevealCardRule extends PlayerTurnRule {
       .filter(({ item, index }) =>
         index !== itemIndex &&
         (item.location.type === LocationType.Grid || item.location.type === LocationType.Deck) &&
-        item.location.rotation === false
+        item.location.rotation === true
       )
 
     if (previousFaceUp.length === 0) return true
@@ -78,8 +79,8 @@ export class RevealCardRule extends PlayerTurnRule {
 
   private failureMoves(): MaterialMove[] {
     const flipMoves = [
-      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false).rotateItems(true),
-      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false).rotateItems(true)
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).rotateItems(undefined),
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true).rotateItems(undefined)
     ]
     const opponentTokensBefore = this.material(MaterialType.InstinctToken)
       .location(LocationType.PlayerTokenPile).player(this.nextPlayer).length
@@ -96,16 +97,16 @@ export class RevealCardRule extends PlayerTurnRule {
   }
 
   private collectFaceUpCards(): { collectMoves: MaterialMove[], faceUpIds: DejaVuCard[], emptyPositions: number[] } {
-    const faceUpGridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false)
-    const faceUpDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false)
+    const faceUpGridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true)
+    const faceUpDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true)
     const faceUpIds: DejaVuCard[] = [
       ...faceUpGridCards.getItems().map(item => (item.id as DejaVuCardId).front),
       ...faceUpDeckCard.getItems().map(item => (item.id as DejaVuCardId).front)
     ]
     const emptyPositions = faceUpGridCards.getItems().map(item => item.location.x!)
     const collectMoves: MaterialMove[] = [
-      ...faceUpGridCards.moveItems({ type: LocationType.PlayerPile, player: this.player, rotation: true }),
-      ...(faceUpDeckCard.length ? [faceUpDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player, rotation: true })] : [])
+      ...faceUpGridCards.moveItems({ type: LocationType.PlayerPile, player: this.player }),
+      ...(faceUpDeckCard.length ? [faceUpDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player })] : [])
     ]
     return { collectMoves, faceUpIds, emptyPositions }
   }
@@ -117,11 +118,11 @@ export class RevealCardRule extends PlayerTurnRule {
       .getIndexes()
       .filter(i => {
         const item = (this.game.items[MaterialType.DejaVuCard] ?? [])[i]
-        return (item?.id as DejaVuCardId)?.front !== endCard && item?.location.rotation === true
+        return (item?.id as DejaVuCardId)?.front !== endCard && !item?.location.rotation
       })
 
     return emptyPositions.slice(0, deckIndexes.length).map((x, i) =>
-      this.material(MaterialType.DejaVuCard).index(deckIndexes[i]).moveItem({ type: LocationType.Grid, x, rotation: true })
+      this.material(MaterialType.DejaVuCard).index(deckIndexes[i]).moveItem({ type: LocationType.Grid, x })
     )
   }
 
@@ -145,8 +146,8 @@ export class RevealCardRule extends PlayerTurnRule {
 
   private get faceUpTableCardIds(): DejaVuCard[] {
     return [
-      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(false).getItems(),
-      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(false).getItems()
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).getItems(),
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true).getItems()
     ].map(item => (item.id as DejaVuCardId).front)
   }
 

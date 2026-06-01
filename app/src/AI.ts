@@ -41,7 +41,7 @@ function getPlayCardMove(moves: MaterialMove[]): MaterialMove {
   const flipMoves = moves.filter(m =>
     isMoveItemType(MaterialType.DejaVuCard)(m) &&
     (m.location.type === LocationType.Grid || m.location.type === LocationType.Deck) &&
-    m.location.rotation === false
+    m.location.rotation === true
   )
   const observeMoves = moves.filter(m =>
     isMoveItemType(MaterialType.DejaVuCard)(m) &&
@@ -65,7 +65,7 @@ function getRevealCardMove(game: MaterialGame, moves: MaterialMove[]): MaterialM
   const allCards = game.items[MaterialType.DejaVuCard] ?? []
   const faceUpCards = allCards.filter(item =>
     (item.location.type === LocationType.Grid || item.location.type === LocationType.Deck) &&
-    item.location.rotation === false
+    item.location.rotation === true
   )
 
   const flipMoves = moves.filter(m => isMoveItemType(MaterialType.DejaVuCard)(m))

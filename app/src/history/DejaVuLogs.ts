@@ -27,13 +27,13 @@ export class DejaVuLogs implements LogDescription<MaterialMove, number, Material
       if (move.location.type === LocationType.PlayerPile) {
         return { player, Component: TakeEndCardLog }
       }
-      if (move.location.rotation === false) {
+      if (move.location.rotation === true) {
         return { player, Component: FlipCardLog }
       }
     }
 
     if (ruleId === RuleId.RevealCard) {
-      if (isMoveItemType(MaterialType.DejaVuCard)(move) && move.location.rotation === false) {
+      if (isMoveItemType(MaterialType.DejaVuCard)(move) && move.location.rotation === true) {
         return { player, Component: RevealCardLog }
       }
       if (isCustomMoveType(CustomMoveType.Terminate)(move)) {

@@ -32,7 +32,7 @@ export class TutorialSetup extends DejaVuSetup {
       [DejaVuCard.card23, 7],
     ]
     for (const [card, x] of gridCards) {
-      this.material(MaterialType.DejaVuCard).createItem({ id: { front: card, back: cardBack(card) }, location: { type: LocationType.Grid, x, rotation: true } })
+      this.material(MaterialType.DejaVuCard).createItem({ id: { front: card, back: cardBack(card) }, location: { type: LocationType.Grid, x } })
     }
 
     // Deck — carte Fin tout en bas (x=0), les autres cartes face cachée au-dessus
@@ -50,7 +50,7 @@ export class TutorialSetup extends DejaVuSetup {
     deckCards.forEach((card, i) => {
       this.material(MaterialType.DejaVuCard).createItem({
         id: { front: card, back: cardBack(card) },
-        location: { type: LocationType.Deck, x: i + 1, rotation: true }
+        location: { type: LocationType.Deck, x: i + 1 }
       })
     })
 

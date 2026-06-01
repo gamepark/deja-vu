@@ -120,7 +120,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
     if (item.location?.type === LocationType.PlayerShowCard) {
       return item.location.player !== context.player
     }
-    return !!item.location?.rotation
+    return !item.location?.rotation
   }
 
   getItemMenu(item: MaterialItem, context: ItemContext, legalMoves: MaterialMove[]) {
@@ -187,7 +187,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
     if (context.rules.game.rule?.id !== RuleId.RevealCard) return false
     if (!isMoveItemType(MaterialType.DejaVuCard)(move)) return false
     if (move.itemIndex !== context.index) return false
-    return move.location.rotation === false
+    return move.location.rotation === true
   }
 
   private getShowCardMenu(context: ItemContext, legalMoves: MaterialMove[]) {

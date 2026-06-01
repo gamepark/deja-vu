@@ -146,7 +146,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
         filter: (move) =>
           isMoveItemType(MaterialType.DejaVuCard)(move) &&
           move.location.type === LocationType.Grid &&
-          move.location.rotation === false &&
+          move.location.rotation === true &&
           move.itemIndex === 4
       }
     },
@@ -169,7 +169,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
         filter: (move) =>
           isMoveItemType(MaterialType.DejaVuCard)(move) &&
           move.location.type === LocationType.Grid &&
-          move.location.rotation === false &&
+          move.location.rotation === true &&
           move.itemIndex === 7
       }
     },
@@ -206,7 +206,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
         filter: (move) =>
           isMoveItemType(MaterialType.DejaVuCard)(move) &&
           move.location.type === LocationType.Grid &&
-          move.location.rotation === false &&
+          move.location.rotation === true &&
           move.itemIndex === 3
       }
     },
@@ -228,7 +228,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
         filter: (move) =>
           isMoveItemType(MaterialType.DejaVuCard)(move) &&
           move.location.type === LocationType.Grid &&
-          move.location.rotation === false &&
+          move.location.rotation === true &&
           move.itemIndex === 0
       }
     },
@@ -250,7 +250,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
         filter: (move) =>
           isMoveItemType(MaterialType.DejaVuCard)(move) &&
           move.location.type === LocationType.Grid &&
-          move.location.rotation === false &&
+          move.location.rotation === true &&
           move.itemIndex === 1
       }
     },
@@ -264,7 +264,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
       focus: (game) => ({
         materials: [
           this.material(game, MaterialType.DejaVuCard)
-            .location((l) => l.type === LocationType.Grid && l.rotation === false)
+            .location((l) => l.type === LocationType.Grid && l.rotation === true)
         ],
         margin: { top: 2, bottom: 2, left: 2, right: 2 }
       }),
