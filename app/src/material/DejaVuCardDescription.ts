@@ -95,14 +95,14 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
     [DejaVuCard.card57]: Front57,
     [DejaVuCard.card66]: Front66,
     [DejaVuCard.cardEnd]: CardEnd,
-  } as any
+  }
 
   // indexed by sum (back value): 0 = carte Fin, 2–12 = cartes normales
   backImages = {
     0: CardEnd,
     2: Back02, 3: Back03, 4: Back04, 5: Back05, 6: Back06, 7: Back07,
-    8: Back08, 9: Back09, 10: Back10, 11: Back11, 12: Back12,
-  } as any
+    8: Back08, 9: Back09, 10: Back10, 11: Back11, 12: Back12, [DejaVuCard.cardEnd]: CardEnd
+  }
 
   getBackImageBySum(sum: number): string | undefined {
     return (this.backImages as Record<number, string>)[sum]
