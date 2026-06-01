@@ -5,7 +5,7 @@ import { ScoreHelper } from './rules/helper/ScoreHelper'
 import { RuleId } from './rules/RuleId'
 import { EndOfTurnRule } from './rules/EndOfTurnRule'
 import { ObserveCardRule } from './rules/ObserveCardRule'
-import { PlayCardRule } from './rules/PlayCardRule'
+import { TakeActionRule } from './rules/TakeActionRule'
 import { RevealCardRule } from './rules/RevealCardRule'
 
 const hideFlippedCardFront = (item: MaterialItem) =>
@@ -30,7 +30,7 @@ export class DejaVuRules
   }
 
   rules = {
-    [RuleId.PlayCard]: PlayCardRule,
+    [RuleId.TakeAction]: TakeActionRule,
     [RuleId.ObserveCard]: ObserveCardRule,
     [RuleId.RevealCard]: RevealCardRule,
     [RuleId.EndOfTurn]: EndOfTurnRule

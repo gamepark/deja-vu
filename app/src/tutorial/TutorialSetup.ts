@@ -62,6 +62,6 @@ export class TutorialSetup extends DejaVuSetup {
   }
 
   start() {
-    this.startPlayerTurn(RuleId.PlayCard, me)
+    this.startPlayerTurn(RuleId.TakeAction, me)
   }
 }

@@ -20,7 +20,7 @@ export const ai = (game: MaterialGame, player: number): Promise<MaterialMove[]> 
   if (legalMoves.length === 1) return Promise.resolve(legalMoves)
 
   switch (game.rule?.id) {
-    case RuleId.PlayCard:
+    case RuleId.TakeAction:
       return Promise.resolve([getPlayCardMove(legalMoves)])
     case RuleId.RevealCard:
       return Promise.resolve([getRevealCardMove(game, legalMoves)])

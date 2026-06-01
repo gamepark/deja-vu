@@ -10,6 +10,6 @@ export class EndGameHelper extends MaterialRulesPart {
       .find(item => (item.id as DejaVuCardId)?.front === endCard && item.location.type === LocationType.PlayerPile)
       ?.location?.player
     if (endCardOwner !== undefined && nextPlayer === endCardOwner) return this.endGame()
-    return this.startPlayerTurn(RuleId.PlayCard, nextPlayer)
+    return this.startPlayerTurn(RuleId.TakeAction, nextPlayer)
   }
 }

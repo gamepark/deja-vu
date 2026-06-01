@@ -20,7 +20,7 @@ export class DejaVuLogs implements LogDescription<MaterialMove, number, Material
     const ruleId = context.game.rule?.id
     const player = context.game.rule?.player
 
-    if (ruleId === RuleId.PlayCard && isMoveItemType(MaterialType.DejaVuCard)(move)) {
+    if (ruleId === RuleId.TakeAction && isMoveItemType(MaterialType.DejaVuCard)(move)) {
       if (move.location.type === LocationType.PlayerShowCard) {
         return { player, Component: ObserveCardLog }
       }

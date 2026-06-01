@@ -5,7 +5,7 @@ import { PlayMoveButton, useLegalMove, usePlayerId, usePlayerName, useRules } fr
 import { isMoveItemType } from '@gamepark/rules-api'
 import { Trans } from 'react-i18next'
 
-export const PlayCardHeader = () => {
+export const TakeActionHeader = () => {
   const playerId = usePlayerId()
   const rules = useRules()!
   const activePlayer = rules.game.rule?.player
@@ -17,10 +17,10 @@ export const PlayCardHeader = () => {
 
   if (itsMe) {
     return <Trans
-      i18nKey={takeEndCardMove ? 'header.play-card.end-card.you' : 'header.play-card.you'}
+      i18nKey={takeEndCardMove ? 'header.take-action.end-card.you' : 'header.take-action.you'}
       components={{ take: <PlayMoveButton move={takeEndCardMove!} /> }}
     />
   }
 
-  return <Trans i18nKey="header.play-card.player" values={{ player: playerName }} />
+  return <Trans i18nKey="header.take-action.player" values={{ player: playerName }} />
 }

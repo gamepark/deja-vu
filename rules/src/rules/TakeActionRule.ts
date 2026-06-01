@@ -5,7 +5,7 @@ import { MaterialType } from '../material/MaterialType'
 import { RuleId } from './RuleId'
 import { EndGameHelper } from './helper/EndGameHelper'
 
-export class PlayCardRule extends PlayerTurnRule {
+export class TakeActionRule extends PlayerTurnRule {
   onRuleStart(): MaterialMove[] {
     const gridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid)
     const deckCards = this.material(MaterialType.DejaVuCard).location(LocationType.Deck)
@@ -53,7 +53,7 @@ export class PlayCardRule extends PlayerTurnRule {
       if (item.selected) delete item.selected
     }
     if (move.location.type === LocationType.PlayerPile) {
-      return [this.startPlayerTurn(RuleId.PlayCard, this.nextPlayer)]
+      return [this.startPlayerTurn(RuleId.TakeAction, this.nextPlayer)]
     }
     if (move.location.type === LocationType.PlayerShowCard) {
       return [this.startRule(RuleId.ObserveCard)]

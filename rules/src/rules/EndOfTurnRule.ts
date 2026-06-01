@@ -26,7 +26,7 @@ export class EndOfTurnRule extends PlayerTurnRule {
       if (playerCount === 1) {
         return [tokenMove, this.endGame()]
       }
-      return [tokenMove, this.startRule(RuleId.PlayCard)]
+      return [tokenMove, this.startRule(RuleId.TakeAction)]
     }
     return []
   }

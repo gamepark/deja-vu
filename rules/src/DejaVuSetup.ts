@@ -26,6 +26,6 @@ export class DejaVuSetup extends MaterialGameSetup<number, MaterialType, Locatio
   }
 
   start() {
-    this.startPlayerTurn(RuleId.PlayCard, this.players[0])
+    this.startPlayerTurn(RuleId.TakeAction, this.players[0])
   }
 }

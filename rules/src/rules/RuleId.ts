@@ -1,5 +1,5 @@
 export enum RuleId {
-  PlayCard = 1,
+  TakeAction = 1,
   ObserveCard,
   RevealCard,
   EndOfTurn
