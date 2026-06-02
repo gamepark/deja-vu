@@ -1,4 +1,5 @@
 import { isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
+import { Memory } from '../Memory'
 import { DejaVuCardId, endCard } from '../material/DejaVuCard'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -23,8 +24,9 @@ export class TakeActionRule extends PlayerTurnRule {
       .maxBy(item => item.location.x ?? 0)
     const topDeckFront = topDeckCard.getItem<DejaVuCardId>()?.id.front
 
-    // Drag-drop de la carte Fin vers la pile si elle est au sommet du deck
-    if (topDeckCard.length && topDeckFront === endCard) {
+    // Drag-drop de la carte Fin vers la pile si elle est au sommet du deck.
+    // Prendre la carte Fin doit être l'unique action du tour : interdit après avoir donné un jeton pour rejouer.
+    if (topDeckCard.length && topDeckFront === endCard && !this.remind(Memory.TokenGivenThisTurn)) {
       moves.push(topDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player }))
     }
 
