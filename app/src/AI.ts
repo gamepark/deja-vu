@@ -23,7 +23,7 @@ export const ai = (game: MaterialGame, player: number): Promise<MaterialMove[]> 
     case RuleId.TakeAction:
       return Promise.resolve([getPlayCardMove(legalMoves)])
     case RuleId.RevealCard:
-      return Promise.resolve([getRevealCardMove(game, legalMoves)])
+      return Promise.resolve([getRevealCardMove(rules, legalMoves)])
     case RuleId.EndOfTurn:
       return Promise.resolve([getEndOfTurnMove(legalMoves)])
     default:
@@ -57,22 +57,21 @@ function getPlayCardMove(moves: MaterialMove[]): MaterialMove {
   return sample(moves)!
 }
 
-function getRevealCardMove(game: MaterialGame, moves: MaterialMove[]): MaterialMove {
+function getRevealCardMove(rules: DejaVuRules, moves: MaterialMove[]): MaterialMove {
   // Terminate as soon as possible (collect face-up cards = score points)
   const terminate = moves.find(isCustomMoveType(CustomMoveType.Terminate))
   if (terminate) return terminate
 
-  const allCards = game.items[MaterialType.DejaVuCard] ?? []
-  const faceUpCards = allCards.filter(item =>
-    (item.location.type === LocationType.Grid || item.location.type === LocationType.Deck) &&
-    item.location.rotation === true
-  )
+  const faceUpCards = [
+    ...rules.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).getItems<DejaVuCardId>(),
+    ...rules.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true).getItems<DejaVuCardId>()
+  ]
 
   const flipMoves = moves.filter(m => isMoveItemType(MaterialType.DejaVuCard)(m))
 
   if (faceUpCards.length === 0) return sample(flipMoves)!
 
-  const commonNumbers = intersectNumbers(faceUpCards.map(item => (item.id as DejaVuCardId).front))
+  const commonNumbers = intersectNumbers(faceUpCards.map(item => item.id.front))
   if (commonNumbers.length === 0) return sample(flipMoves)!
 
   // Sometimes make a mistake and flip a non-matching card (simulates forgetting)
@@ -81,9 +80,9 @@ function getRevealCardMove(game: MaterialGame, moves: MaterialMove[]): MaterialM
   // Only flip cards that share a number with the already-revealed cards
   const matchingMoves = flipMoves.filter(m => {
     if (!isMoveItemType(MaterialType.DejaVuCard)(m)) return false
-    const card = allCards[m.itemIndex]
+    const card = rules.material(MaterialType.DejaVuCard).getItem<DejaVuCardId>(m.itemIndex)
     if (!card?.id) return false
-    return dejaVuCardsData[(card.id as DejaVuCardId).front].some(n => commonNumbers.includes(n))
+    return dejaVuCardsData[card.id.front].some(n => commonNumbers.includes(n))
   })
 
   return matchingMoves.length > 0 ? sample(matchingMoves)! : sample(flipMoves)!

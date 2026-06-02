@@ -1,20 +1,18 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { DejaVuCard, DejaVuCardId } from '@gamepark/deja-vu/material/DejaVuCard'
+import { DejaVuCardId } from '@gamepark/deja-vu/material/DejaVuCard'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { PlayMoveButton } from '@gamepark/react-game'
 import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { dejaVuCardDescription } from '../material/DejaVuCardDescription'
 
-type Props = { item: MaterialItem, showFront?: boolean }
+type Props = { item: MaterialItem<number, number, DejaVuCardId>, showFront?: boolean }
 
 export const DejaVuCardChip = ({ item, showFront }: Props) => {
-  const cardId = item.id as DejaVuCardId | undefined
-  const image = cardId !== undefined
-    ? (showFront && cardId.front !== undefined
-      ? dejaVuCardDescription.getFrontImage(cardId.front as DejaVuCard)
-      : dejaVuCardDescription.getBackImageBySum(cardId.back))
-    : undefined
+  const cardId = item.id
+  const image = showFront && cardId.front !== undefined
+    ? dejaVuCardDescription.getFrontImage(cardId.front)
+    : dejaVuCardDescription.getBackImageBySum(cardId.back)
 
   if (!image) return null
 

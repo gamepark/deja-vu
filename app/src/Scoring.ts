@@ -1,3 +1,4 @@
+import { DejaVuRules } from '@gamepark/deja-vu/DejaVuRules'
 import { ScoreHelper } from '@gamepark/deja-vu/rules/helper/ScoreHelper'
 import { ScoringDescription } from '@gamepark/react-game'
 import { createElement } from 'react'
@@ -6,10 +7,10 @@ import { GameOverHeader } from './headers/GameOverHeader'
 
 const enum ScoringKey { Cards = 1, Tokens, Total }
 
-export const scoring: ScoringDescription = {
+export const scoring: ScoringDescription<number, DejaVuRules> = {
   getScoringKeys: (rules) => {
     const scoreHelper = new ScoreHelper(rules.game)
-    const isInstinctWin = (rules.game.players as number[]).some(player => scoreHelper.getTokenCount(player) === 0)
+    const isInstinctWin = rules.game.players.some(player => scoreHelper.getTokenCount(player) === 0)
     return isInstinctWin ? [] : [ScoringKey.Cards, ScoringKey.Tokens, ScoringKey.Total]
   },
 
@@ -21,8 +22,8 @@ export const scoring: ScoringDescription = {
 
   getScoringPlayerData: (key, player, rules) => {
     const scoreHelper = new ScoreHelper(rules.game)
-    const tokens = scoreHelper.getTokenCount(player as number)
-    const score = scoreHelper.getScore(player as number)
+    const tokens = scoreHelper.getTokenCount(player)
+    const score = scoreHelper.getScore(player)
     if (key === ScoringKey.Cards) return score - tokens * 0.5
     if (key === ScoringKey.Tokens) return tokens * 0.5
     return score

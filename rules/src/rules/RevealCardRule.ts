@@ -14,8 +14,8 @@ export class RevealCardRule extends PlayerTurnRule {
     moves.push(...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(r => !r).rotateItems(true))
 
     const topDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).maxBy(item => item.location.x ?? 0)
-    const topDeckItem = topDeckCard.getItem()
-    if (topDeckCard.length && !topDeckItem?.location.rotation && (topDeckItem?.id as DejaVuCardId)?.front !== endCard) {
+    const topDeckItem = topDeckCard.getItem<DejaVuCardId>()
+    if (topDeckCard.length && !topDeckItem?.location.rotation && topDeckItem?.id.front !== endCard) {
       moves.push(topDeckCard.rotateItem(true))
     }
 
@@ -30,11 +30,10 @@ export class RevealCardRule extends PlayerTurnRule {
     if (!isMoveItemType(MaterialType.DejaVuCard)(move)) return []
     if (move.location.rotation !== true) return []
 
-    const allItems = this.game.items[MaterialType.DejaVuCard] ?? []
-    const newCard = allItems[move.itemIndex]
+    const newCard = this.material(MaterialType.DejaVuCard).getItem<DejaVuCardId>(move.itemIndex)
     if (!newCard?.id) return []
 
-    if (!this.isRevealValid(move.itemIndex, (newCard.id as DejaVuCardId).front, allItems)) {
+    if (!this.isRevealValid(move.itemIndex, newCard.id.front)) {
       return this.failureMoves()
     }
 
@@ -61,18 +60,15 @@ export class RevealCardRule extends PlayerTurnRule {
     ]
   }
 
-  private isRevealValid(itemIndex: number, newCardId: DejaVuCard, allItems: { id?: unknown, location: { type: LocationType, rotation?: boolean } }[]): boolean {
-    const previousFaceUp = allItems
-      .map((item, index) => ({ item, index }))
-      .filter(({ item, index }) =>
-        index !== itemIndex &&
-        (item.location.type === LocationType.Grid || item.location.type === LocationType.Deck) &&
-        item.location.rotation === true
-      )
+  private isRevealValid(itemIndex: number, newCardId: DejaVuCard): boolean {
+    const previousFaceUp = [
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).index(index => index !== itemIndex).getItems<DejaVuCardId>(),
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true).index(index => index !== itemIndex).getItems<DejaVuCardId>()
+    ]
 
     if (previousFaceUp.length === 0) return true
 
-    const prevCommon = this.intersectNumbers(previousFaceUp.map(({ item }) => (item.id as DejaVuCardId).front))
+    const prevCommon = this.intersectNumbers(previousFaceUp.map(item => item.id.front))
     if (prevCommon.length === 0) return true
 
     return dejaVuCardsData[newCardId].some(n => prevCommon.includes(n))
@@ -101,8 +97,8 @@ export class RevealCardRule extends PlayerTurnRule {
     const faceUpGridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true)
     const faceUpDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true)
     const faceUpIds: DejaVuCard[] = [
-      ...faceUpGridCards.getItems().map(item => (item.id as DejaVuCardId).front),
-      ...faceUpDeckCard.getItems().map(item => (item.id as DejaVuCardId).front)
+      ...faceUpGridCards.getItems<DejaVuCardId>().map(item => item.id.front),
+      ...faceUpDeckCard.getItems<DejaVuCardId>().map(item => item.id.front)
     ]
     const collectMoves: MaterialMove[] = [
       ...faceUpGridCards.moveItems({ type: LocationType.PlayerPile, player: this.player }),
@@ -136,9 +132,9 @@ export class RevealCardRule extends PlayerTurnRule {
 
   private get faceUpTableCardIds(): DejaVuCard[] {
     return [
-      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).getItems(),
-      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true).getItems()
-    ].map(item => (item.id as DejaVuCardId).front)
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).getItems<DejaVuCardId>(),
+      ...this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true).getItems<DejaVuCardId>()
+    ].map(item => item.id.front)
   }
 
   private countCommonOccurrences(cardIds: DejaVuCard[]): number {
