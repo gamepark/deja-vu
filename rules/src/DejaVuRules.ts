@@ -1,12 +1,23 @@
-import { CompetitiveScore, FillGapStrategy, hideFrontToOthers, isMoveItemType, MaterialGame, MaterialItem, MaterialMove, PositiveSequenceStrategy, SecretMaterialRules, TimeLimit } from '@gamepark/rules-api'
+import {
+  CompetitiveScore,
+  FillGapStrategy,
+  hideFrontToOthers,
+  isMoveItemType,
+  MaterialGame,
+  MaterialItem,
+  MaterialMove,
+  PositiveSequenceStrategy,
+  SecretMaterialRules,
+  TimeLimit
+} from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
-import { ScoreHelper } from './rules/helper/ScoreHelper'
-import { RuleId } from './rules/RuleId'
 import { EndOfTurnRule } from './rules/EndOfTurnRule'
+import { ScoreHelper } from './rules/helper/ScoreHelper'
 import { ObserveCardRule } from './rules/ObserveCardRule'
-import { TakeActionRule } from './rules/TakeActionRule'
 import { RevealCardRule } from './rules/RevealCardRule'
+import { RuleId } from './rules/RuleId'
+import { TakeActionRule } from './rules/TakeActionRule'
 
 const hideFlippedCardFront = (item: MaterialItem) =>
   !item.location.rotation ? ['id.front'] : []
@@ -48,10 +59,8 @@ export class DejaVuRules
     return super.moveBlocksUndo(move, player)
   }
 
-  scoreHelper = new ScoreHelper(this.game)
-
   getScore(player: number): number {
-    return this.scoreHelper.getScore(player)
+    return new ScoreHelper(this.game).getScore(player)
   }
 
   giveTime(): number {
