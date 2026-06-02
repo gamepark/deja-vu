@@ -55,6 +55,6 @@ export class DejaVuRules
   }
 
   giveTime(): number {
-    return 60
+    return 30
   }
 }
