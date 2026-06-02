@@ -4,7 +4,7 @@ import { LocationType } from '@gamepark/deja-vu/material/LocationType'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { CustomMoveType } from '@gamepark/deja-vu/rules/CustomMoveType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
-import { isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove } from '@gamepark/rules-api'
+import { isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce, MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { sample } from 'es-toolkit'
 
 // Probability of observing a card instead of flipping it
@@ -59,7 +59,7 @@ function getPlayCardMove(moves: MaterialMove[]): MaterialMove {
 
 function getRevealCardMove(rules: DejaVuRules, moves: MaterialMove[]): MaterialMove {
   // Terminate as soon as possible (collect face-up cards = score points)
-  const terminate = moves.find(isCustomMoveType(CustomMoveType.Terminate))
+  const terminate = moves.find(isMoveItemTypeAtOnce(MaterialType.DejaVuCard))
   if (terminate) return terminate
 
   const faceUpCards = [

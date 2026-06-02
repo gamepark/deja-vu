@@ -1,8 +1,7 @@
 import { LogDescription, MoveComponentContext, MovePlayedLogDescription } from '@gamepark/react-game'
-import { isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove } from '@gamepark/rules-api'
+import { isMoveItemType, isMoveItemTypeAtOnce, MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '@gamepark/deja-vu/material/LocationType'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
-import { CustomMoveType } from '@gamepark/deja-vu/rules/CustomMoveType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
 import { FlipCardLog } from './FlipCardLog'
 import { GiveTokenLog } from './GiveTokenLog'
@@ -36,7 +35,7 @@ export class DejaVuLogs implements LogDescription<MaterialMove, number, Material
       if (isMoveItemType(MaterialType.DejaVuCard)(move) && move.location.rotation === true) {
         return { player, Component: RevealCardLog }
       }
-      if (isCustomMoveType(CustomMoveType.Terminate)(move)) {
+      if (isMoveItemTypeAtOnce(MaterialType.DejaVuCard)(move)) {
         return { player, Component: TerminateLog }
       }
       if (isMoveItemType(MaterialType.InstinctToken)(move)) {

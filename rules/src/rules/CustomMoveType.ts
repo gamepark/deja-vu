@@ -1,4 +1,3 @@
 export enum CustomMoveType {
-  Terminate = 1,
-  EndTurn
+  EndTurn = 1
 }

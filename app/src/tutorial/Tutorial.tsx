@@ -3,7 +3,7 @@ import { LocationType } from '@gamepark/deja-vu/material/LocationType'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { CustomMoveType } from '@gamepark/deja-vu/rules/CustomMoveType'
 import { MaterialTutorial, TutorialStep } from '@gamepark/react-game'
-import { isCustomMoveType, isMoveItemType } from '@gamepark/rules-api'
+import { isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce } from '@gamepark/rules-api'
 import { Trans } from 'react-i18next'
 import { me, opponent, TutorialSetup } from './TutorialSetup'
 
@@ -269,7 +269,7 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
         margin: { top: 2, bottom: 2, left: 2, right: 2 }
       }),
       move: {
-        filter: (move) => isCustomMoveType(CustomMoveType.Terminate)(move)
+        filter: (move) => isMoveItemTypeAtOnce(MaterialType.DejaVuCard)(move)
       }
     },
 

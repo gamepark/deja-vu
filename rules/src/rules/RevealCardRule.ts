@@ -1,9 +1,8 @@
-import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
+import { isMoveItemType, isMoveItemTypeAtOnce, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
 import { dejaVuCardsData, DejaVuCard, DejaVuCardId, endCard } from '../material/DejaVuCard'
 import { BONUS_TOKEN_THRESHOLD, TERMINATE_MIN_OCCURRENCES } from '../GameConstants'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { CustomMoveType } from './CustomMoveType'
 import { RuleId } from './RuleId'
 import { EndGameHelper } from './helper/EndGameHelper'
 
@@ -20,10 +19,34 @@ export class RevealCardRule extends PlayerTurnRule {
     }
 
     if (this.canTerminate) {
-      moves.push(this.customMove(CustomMoveType.Terminate))
+      // Terminate = scoop up every revealed card at once into the player's pile.
+      moves.push(
+        this.material(MaterialType.DejaVuCard)
+          .location(location => location.type === LocationType.Grid || location.type === LocationType.Deck)
+          .rotation(true)
+          .moveItemsAtOnce({ type: LocationType.PlayerPile, player: this.player })
+      )
     }
 
     return moves
+  }
+
+  // All terminate consequences are computed BEFORE the cards leave the table: refill, bonus and the
+  // end-of-turn decision all depend on the revealed cards (their fronts are public only while
+  // face-up). beforeItemMove is computed pre-collect but its moves still play after it, preserving
+  // the original order: refill the grid, grant the bonus, then end the turn.
+  beforeItemMove(move: ItemMove): MaterialMove[] {
+    if (!isMoveItemTypeAtOnce(MaterialType.DejaVuCard)(move)) return []
+
+    const refillMoves = this.refillGrid()
+    const bonusMove = this.bonusTokenMove(this.faceUpTableCardIds)
+
+    // The bonus steals a token from the opponent: the player wins if it was their last one.
+    const opponentTokensAfter = this.material(MaterialType.InstinctToken)
+      .location(LocationType.PlayerTokenPile).player(this.nextPlayer).getQuantity() - (bonusMove ? 1 : 0)
+    const endMove = opponentTokensAfter === 0 ? this.endGame() : this.startRule(RuleId.EndOfTurn)
+
+    return [...refillMoves, ...(bonusMove ? [bonusMove] : []), endMove]
   }
 
   afterItemMove(move: ItemMove): MaterialMove[] {
@@ -38,26 +61,6 @@ export class RevealCardRule extends PlayerTurnRule {
     }
 
     return []
-  }
-
-  onCustomMove(move: CustomMove): MaterialMove[] {
-    if (!isCustomMoveType(CustomMoveType.Terminate)(move)) return []
-
-    const { collectMoves, faceUpIds, gridCount } = this.collectFaceUpCards()
-    const refillMoves = this.refillGrid(gridCount)
-    const bonusMove = this.bonusTokenMove(faceUpIds)
-
-    // The bonus steals a token from the opponent: the player wins if it was their last one.
-    const opponentTokensAfter = this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile).player(this.nextPlayer).getQuantity() - (bonusMove ? 1 : 0)
-    const endMove = opponentTokensAfter === 0 ? this.endGame() : this.startRule(RuleId.EndOfTurn)
-
-    return [
-      ...collectMoves,
-      ...refillMoves,
-      ...(bonusMove ? [bonusMove] : []),
-      endMove
-    ]
   }
 
   private isRevealValid(itemIndex: number, newCardId: DejaVuCard): boolean {
@@ -93,29 +96,19 @@ export class RevealCardRule extends PlayerTurnRule {
     return [...flipMoves, ...tokenMoves, endMove]
   }
 
-  private collectFaceUpCards(): { collectMoves: MaterialMove[], faceUpIds: DejaVuCard[], gridCount: number } {
-    const faceUpGridCards = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true)
-    const faceUpDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).rotation(true)
-    const faceUpIds: DejaVuCard[] = [
-      ...faceUpGridCards.getItems<DejaVuCardId>().map(item => item.id.front),
-      ...faceUpDeckCard.getItems<DejaVuCardId>().map(item => item.id.front)
-    ]
-    const collectMoves: MaterialMove[] = [
-      ...faceUpGridCards.moveItems({ type: LocationType.PlayerPile, player: this.player }),
-      ...(faceUpDeckCard.length ? [faceUpDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player })] : [])
-    ]
-    return { collectMoves, faceUpIds, gridCount: faceUpGridCards.length }
-  }
-
-  // Deal hidden deck cards (top first, excluding the End card) onto the Grid;
-  // FillGapStrategy assigns each one to the lowest free position.
-  private refillGrid(count: number): MaterialMove[] {
+  // Deal hidden deck cards (top first, excluding the End card) to refill the gaps the face-up Grid
+  // cards are about to leave. The count is the number of face-up Grid cards (still present here, in
+  // beforeItemMove); FillGapStrategy, applied when the deal plays (i.e. after the collect), assigns
+  // each new card to the lowest free position.
+  private refillGrid(): MaterialMove[] {
+    const gridGaps = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).length
+    if (gridGaps === 0) return []
     return this.material(MaterialType.DejaVuCard)
       .location(LocationType.Deck)
       .rotation(r => !r)
       .id<DejaVuCardId>(id => id.front !== endCard)
       .deck()
-      .deal({ type: LocationType.Grid }, count)
+      .deal({ type: LocationType.Grid }, gridGaps)
   }
 
   private bonusTokenMove(faceUpIds: DejaVuCard[]): MaterialMove | undefined {
