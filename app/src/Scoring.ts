@@ -9,9 +9,7 @@ const enum ScoringKey { Cards = 1, Tokens, Total }
 export const scoring: ScoringDescription = {
   getScoringKeys: (rules) => {
     const scoreHelper = new ScoreHelper(rules.game)
-    const isInstinctWin = (rules.game.players as number[]).some(
-      player => scoreHelper.hasAllTokens(player)
-    )
+    const isInstinctWin = (rules.game.players as number[]).some(player => scoreHelper.getTokenCount(player) === 0)
     return isInstinctWin ? [] : [ScoringKey.Cards, ScoringKey.Tokens, ScoringKey.Total]
   },
 

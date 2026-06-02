@@ -4,8 +4,10 @@ import { MaterialType } from '../../material/MaterialType'
 
 export class ScoreHelper extends MaterialRulesPart {
   getScore(player: number): number {
-    if (this.hasAllTokens(player)) return 1000
+    const opponent = this.game.players.find((p) => p !== player)!
+    if (this.getTokenCount(opponent) === 0) return 7
     const tokens = this.getTokenCount(player)
+    if (tokens === 0) return 0
     const cards = this.getCardCount(player)
     return cards + tokens * 0.5
   }
@@ -18,13 +20,5 @@ export class ScoreHelper extends MaterialRulesPart {
   getTokenCount(player: number): number {
     return this.material(MaterialType.InstinctToken)
       .location(LocationType.PlayerTokenPile).player(player).getQuantity()
-  }
-
-  /** A player wins instantly when they hold every instinct token, i.e. no opponent has any. */
-  hasAllTokens(player: number): boolean {
-    return this.material(MaterialType.InstinctToken)
-      .location(LocationType.PlayerTokenPile)
-      .player(p => p !== player)
-      .getQuantity() === 0
   }
 }

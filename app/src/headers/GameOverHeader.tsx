@@ -11,7 +11,8 @@ export const GameOverHeader = () => {
 
   const scoreHelper = new ScoreHelper(rules.game)
 
-  if (scoreHelper.hasAllTokens(winner.id as number)) {
+  const opponent = (rules.game.players as number[]).find((p) => p !== winner.id)!
+  if (scoreHelper.getTokenCount(opponent) === 0) {
     return <Trans i18nKey="game.over.instinct" values={{ player: winnerName }} />
   }
 
