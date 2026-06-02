@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { CustomMoveType } from '@gamepark/deja-vu/rules/CustomMoveType'
+import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { PlayMoveButton, useLegalMove, usePlayerId, usePlayerName, useRules } from '@gamepark/react-game'
-import { isCustomMoveType } from '@gamepark/rules-api'
+import { isCustomMoveType, isMoveItemType } from '@gamepark/rules-api'
 import { Trans } from 'react-i18next'
 
 export const EndOfTurnHeader = () => {
@@ -10,7 +11,7 @@ export const EndOfTurnHeader = () => {
   const activePlayer = rules.game.rule?.player
   const itsMe = playerId !== undefined && activePlayer === playerId
   const playerName = usePlayerName(activePlayer)
-  const giveTokenMove = useLegalMove(isCustomMoveType(CustomMoveType.GiveTokenToReplay))
+  const giveTokenMove = useLegalMove(isMoveItemType(MaterialType.InstinctToken))
   const endTurnMove = useLegalMove(isCustomMoveType(CustomMoveType.EndTurn))
 
   if (itsMe) {

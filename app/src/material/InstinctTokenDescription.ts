@@ -5,6 +5,7 @@ import { InstinctTokenHelp } from './help/InstinctTokenHelp'
 class InstinctTokenDescription extends TokenDescription {
   width = 4.94 / 2
   height = 9.4 / 2
+  borderRadius = 0.5
 
   transparency = true
 

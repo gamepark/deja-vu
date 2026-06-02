@@ -44,13 +44,8 @@ export class DejaVuLogs implements LogDescription<MaterialMove, number, Material
       }
     }
 
-    if (ruleId === RuleId.EndOfTurn) {
-      if (isCustomMoveType(CustomMoveType.GiveTokenToReplay)(move)) {
-        return { player, Component: GiveTokenLog }
-      }
-      if (isMoveItemType(MaterialType.InstinctToken)(move)) {
-        return { Component: TokenTransferLog, depth: 1 }
-      }
+    if (ruleId === RuleId.EndOfTurn && isMoveItemType(MaterialType.InstinctToken)(move)) {
+      return { player, Component: GiveTokenLog }
     }
 
     return undefined
