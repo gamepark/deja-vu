@@ -2,7 +2,7 @@ import { getRelativePlayerIndex, MaterialContext, PileLocator } from '@gamepark/
 import { Coordinates, Location } from '@gamepark/rules-api'
 
 class PlayerTokenPileLocator extends PileLocator {
-
+  radius = 2
   getCoordinates(location: Location, context: MaterialContext): Partial<Coordinates> {
     const index = getRelativePlayerIndex(context, location.player)
     return { x: index === 0 ? -15 : 15, y: -9 }
