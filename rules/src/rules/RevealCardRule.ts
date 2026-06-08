@@ -119,7 +119,7 @@ export class RevealCardRule extends PlayerTurnRule {
     return opponentTokens.moveItem({ type: LocationType.PlayerTokenPile, player: this.player }, 1)
   }
 
-  private get canTerminate(): boolean {
+  get canTerminate(): boolean {
     return this.countCommonOccurrences(this.faceUpTableCardIds) >= TERMINATE_MIN_OCCURRENCES
   }
 
