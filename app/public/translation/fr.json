@@ -4,6 +4,7 @@
   "action.observe": "Observer",
   "action.flip": "Révéler",
   "action.put-back": "Remettre en place",
+  "action.take": "Prendre",
   "header.take-action.you": "Observez ou révélez une carte",
   "header.take-action.end-card.you": "Observez ou révélez une carte <take>Prendre la carte Fin</take>",
   "game.over.instinct": "{player} gagne par instinct !",

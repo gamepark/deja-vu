@@ -3,7 +3,7 @@ import { DejaVuCard, DejaVuCardId } from '@gamepark/deja-vu/material/DejaVuCard.
 import { DejaVuCardHelp } from './help/DejaVuCardHelp'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
-import { faArrowRotateLeft, faEye, faHandPointer, faRotate, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateLeft, faEye, faHandBackFist, faHandPointer, faRotate, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
 import { isMoveItemType, MaterialItem, MaterialMove } from '@gamepark/rules-api'
@@ -141,9 +141,15 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
       move.itemIndex === context.index &&
       (move.location.type === LocationType.Grid || move.location.type === LocationType.Deck)
     )
+    // Prendre la carte Fin: déplacement vers la pile du joueur
+    const takeMove = legalMoves.find(move =>
+      isMoveItemType(MaterialType.DejaVuCard)(move) &&
+      move.itemIndex === context.index &&
+      move.location.type === LocationType.PlayerPile
+    )
 
     if (!item.selected) {
-      if (!observerMove && !retournerMove) return null
+      if (!observerMove && !retournerMove && !takeMove) return null
       const cards = context.rules.material(MaterialType.DejaVuCard)
       const selectMoves = [
         ...cards.selected().unselectItems(),
@@ -193,6 +199,16 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
             move={retournerMove}
           >
             <FontAwesomeIcon icon={faRotate} />
+          </DejaVuMenuButton>
+        )}
+        {takeMove && (
+          <DejaVuMenuButton
+            x={4} y={0}
+            label={<Trans i18nKey="action.take" />}
+            labelPosition="right"
+            move={takeMove}
+          >
+            <FontAwesomeIcon icon={faHandBackFist} />
           </DejaVuMenuButton>
         )}
       </>
