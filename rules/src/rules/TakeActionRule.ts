@@ -5,6 +5,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { RuleId } from './RuleId'
 import { EndGameHelper } from './helper/EndGameHelper'
+import { RevealedCardsHelper } from './helper/RevealedCardsHelper'
 
 export class TakeActionRule extends PlayerTurnRule {
   onRuleStart(): MaterialMove[] {
@@ -64,6 +65,7 @@ export class TakeActionRule extends PlayerTurnRule {
       return [this.startRule(RuleId.ObserveCard)]
     }
     if (move.location.type === LocationType.Grid || move.location.type === LocationType.Deck) {
+      new RevealedCardsHelper(this.game).rememberFaceUpCards()
       return [this.startRule(RuleId.RevealCard)]
     }
     return []

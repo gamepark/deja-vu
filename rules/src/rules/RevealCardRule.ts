@@ -5,6 +5,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { RuleId } from './RuleId'
 import { EndGameHelper } from './helper/EndGameHelper'
+import { RevealedCardsHelper } from './helper/RevealedCardsHelper'
 
 export class RevealCardRule extends PlayerTurnRule {
   getPlayerMoves(): MaterialMove[] {
@@ -54,6 +55,9 @@ export class RevealCardRule extends PlayerTurnRule {
   afterItemMove(move: ItemMove): MaterialMove[] {
     if (!isMoveItemType(MaterialType.DejaVuCard)(move)) return []
     if (move.location.rotation !== true) return []
+
+    // Record the card publicly before checking validity, so a failed reveal stays known.
+    new RevealedCardsHelper(this.game).rememberFaceUpCards()
 
     const newCard = this.material(MaterialType.DejaVuCard).getItem<DejaVuCardId>(move.itemIndex)
     if (!newCard?.id) return []
