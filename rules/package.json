@@ -19,7 +19,7 @@
     "check:cycles": "madge --circular --extensions ts src",
     "build": "yarn check:cycles && tsc",
     "prepack": "yarn build",
-    "publish": "yarn version ${0:-patch} && yarn npm publish && git commit -am \"Release\" && git tag v$(node -p \"require('./package.json').version\") && git push --follow-tags",
+    "publish": "yarn version ${0:-patch} && yarn npm publish && git commit -am v$(node -p \"require('./package.json').version\") && git tag v$(node -p \"require('./package.json').version\") && git push --follow-tags",
     "lint": "eslint --fix"
   },
   "peerDependencies": {
