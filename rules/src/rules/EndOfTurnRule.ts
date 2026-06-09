@@ -30,7 +30,8 @@ export class EndOfTurnRule extends PlayerTurnRule {
   private get hasPlayableCard(): boolean {
     if (this.material(MaterialType.DejaVuCard).location(LocationType.Grid).length > 0) return true
     const topDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).maxBy(item => item.location.x ?? 0)
-    return topDeckCard.length > 0 && topDeckCard.getItem<DejaVuCardId>()?.id.front !== endCard
+    // Identify the End card by its always-visible back, not its hidden front (deterministic across views).
+    return topDeckCard.length > 0 && topDeckCard.getItem<DejaVuCardId>()?.id.back !== endCard
   }
 
   afterItemMove(move: ItemMove): MaterialMove[] {

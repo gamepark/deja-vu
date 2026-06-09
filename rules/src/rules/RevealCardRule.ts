@@ -14,7 +14,9 @@ export class RevealCardRule extends PlayerTurnRule {
 
     const topDeckCard = this.material(MaterialType.DejaVuCard).location(LocationType.Deck).maxBy(item => item.location.x ?? 0)
     const topDeckItem = topDeckCard.getItem<DejaVuCardId>()
-    if (topDeckCard.length && !topDeckItem?.location.rotation && topDeckItem?.id.front !== endCard) {
+    // The End card is identified by its back (= endCard): its front is hidden while face down, but the
+    // back is always visible, so this stays deterministic between the server and the acting player's view.
+    if (topDeckCard.length && !topDeckItem?.location.rotation && topDeckItem?.id.back !== endCard) {
       moves.push(topDeckCard.rotateItem(true))
     }
 
@@ -103,10 +105,13 @@ export class RevealCardRule extends PlayerTurnRule {
   private refillGrid(): MaterialMove[] {
     const gridGaps = this.material(MaterialType.DejaVuCard).location(LocationType.Grid).rotation(true).length
     if (gridGaps === 0) return []
+    // Exclude the End card by its (always-visible) back, not its hidden front: filtering on the front
+    // would let the acting player's view keep the End card in the deal pool while the server drops it,
+    // producing more local consequences than the server returns.
     return this.material(MaterialType.DejaVuCard)
       .location(LocationType.Deck)
       .rotation(r => !r)
-      .id<DejaVuCardId>(id => id.front !== endCard)
+      .id<DejaVuCardId>(id => id.back !== endCard)
       .deck()
       .deal({ type: LocationType.Grid }, gridGaps)
   }

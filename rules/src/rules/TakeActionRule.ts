@@ -22,11 +22,13 @@ export class TakeActionRule extends PlayerTurnRule {
     const topDeckCard = this.material(MaterialType.DejaVuCard)
       .location(LocationType.Deck)
       .maxBy(item => item.location.x ?? 0)
-    const topDeckFront = topDeckCard.getItem<DejaVuCardId>()?.id.front
+    // On identifie la carte Fin par son dos (= endCard), toujours visible, et non par son front masqué
+    // tant qu'elle est face cachée : la logique reste déterministe entre le serveur et la vue du joueur.
+    const topDeckBack = topDeckCard.getItem<DejaVuCardId>()?.id.back
 
     // Drag-drop de la carte Fin vers la pile si elle est au sommet du deck.
     // Prendre la carte Fin doit être l'unique action du tour : interdit après avoir donné un jeton pour rejouer.
-    if (topDeckCard.length && topDeckFront === endCard && !this.remind(Memory.TokenGivenThisTurn)) {
+    if (topDeckCard.length && topDeckBack === endCard && !this.remind(Memory.TokenGivenThisTurn)) {
       moves.push(topDeckCard.moveItem({ type: LocationType.PlayerPile, player: this.player }))
     }
 
@@ -37,13 +39,13 @@ export class TakeActionRule extends PlayerTurnRule {
       rotation: true,
       id: item.location.x
     })))
-    if (topDeckCard.length && topDeckFront !== endCard) {
+    if (topDeckCard.length && topDeckBack !== endCard) {
       moves.push(topDeckCard.moveItem({ type: LocationType.PlayerShowCard, player: this.player, rotation: true }))
     }
 
     // Retourner: révéler la carte sur place (rotation true)
     moves.push(...gridCards.rotateItems(true))
-    if (topDeckCard.length && topDeckFront !== endCard) {
+    if (topDeckCard.length && topDeckBack !== endCard) {
       moves.push(topDeckCard.rotateItem(true))
     }
 
