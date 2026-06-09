@@ -51,6 +51,7 @@ export class DejaVuRules
     [MaterialType.DejaVuCard]: {
       [LocationType.Deck]: new PositiveSequenceStrategy(),
       [LocationType.Grid]: new FillGapStrategy(),
+      [LocationType.PlayerPile]: new PositiveSequenceStrategy(),
     },
   }
 
