@@ -6,9 +6,9 @@ import { MaterialTutorial, TutorialStep } from '@gamepark/react-game'
 import { isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce } from '@gamepark/rules-api'
 import React from 'react'
 import { Trans } from 'react-i18next'
+import CardEndImg from '../images/cards/CardEnd.jpg'
 import ObserverIcon from '../images/icons/observer.png'
 import RevelerIcon from '../images/icons/reveler.png'
-import { REVEAL_END_CARD_VIEW } from '../locators/DejaVuCardsDeckLocator'
 import { me, opponent, TutorialSetup } from './TutorialSetup'
 
 const C = {
@@ -31,6 +31,16 @@ const ActionsText = () => (
       <span><Trans i18nKey="tuto.actions.reveal" components={C}/></span>
     </span>
   </>
+)
+
+const endCardRowStyle: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: '1em' }
+const endCardImgStyle: React.CSSProperties = { height: '9em', borderRadius: '0.4em', flexShrink: 0 }
+
+const EndCardText = () => (
+  <span style={endCardRowStyle}>
+    <img src={CardEndImg} style={endCardImgStyle} alt=""/>
+    <span><Trans i18nKey="tuto.end-card" components={C}/></span>
+  </span>
 )
 
 export class Tutorial extends MaterialTutorial<number, MaterialType, LocationType> {
@@ -433,10 +443,9 @@ export class Tutorial extends MaterialTutorial<number, MaterialType, LocationTyp
     },
 
     // ─── Carte Fin ───────────────────────────────────────────────────────────
-    // `view` sort la carte Fin du paquet (voir DejaVuCardsDeckLocator) pour la dévoiler le temps du popup.
+    // La carte Fin reste cachée au fond du paquet : on la montre directement dans le popup (image).
     {
-      view: REVEAL_END_CARD_VIEW,
-      popup: { text: () => <Trans i18nKey="tuto.end-card" components={C}/>, position: { x: -35, y: -20 } },
+      popup: { text: () => <EndCardText/>, position: { x: -35, y: -20 } },
       focus: (game) => ({
         materials: [this.material(game, MaterialType.DejaVuCard).location(LocationType.Deck)],
         margin: { top: 2, bottom: 2, left: 2, right: 2 }
