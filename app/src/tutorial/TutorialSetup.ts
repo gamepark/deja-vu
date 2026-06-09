@@ -44,7 +44,7 @@ export class TutorialSetup extends DejaVuSetup {
 
     // Deck — carte Fin tout en bas (x=0), les autres face cachée au-dessus
     this.material(MaterialType.DejaVuCard).createItem({
-      id: { front: DejaVuCard.cardEnd, back: 0 },
+      id: { front: DejaVuCard.cardEnd, back: DejaVuCard.cardEnd },
       location: { type: LocationType.Deck, x: 0 }
     })
     const deckCards: DejaVuCard[] = [
