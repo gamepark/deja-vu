@@ -3,7 +3,7 @@ import { DejaVuCard, DejaVuCardId } from '@gamepark/deja-vu/material/DejaVuCard.
 import { DejaVuCardHelp } from './help/DejaVuCardHelp'
 import { MaterialType } from '@gamepark/deja-vu/material/MaterialType'
 import { RuleId } from '@gamepark/deja-vu/rules/RuleId'
-import { faArrowRotateLeft, faEye, faHandBackFist, faHandPointer, faRotate, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faArrowUpRightFromSquare, faEye, faFire, faHandBackFist, faHandPointer, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
 import { isMoveItemType, MaterialItem, MaterialMove } from '@gamepark/rules-api'
@@ -198,7 +198,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
             labelPosition="right"
             move={retournerMove}
           >
-            <FontAwesomeIcon icon={faRotate} />
+            <FontAwesomeIcon icon={faFire} />
           </DejaVuMenuButton>
         )}
         {takeMove && (
@@ -236,7 +236,7 @@ class DejaVuCardDescription extends CardDescription<number, number, number, Deja
         labelPosition="right"
         move={putBackMove}
       >
-        <FontAwesomeIcon icon={faArrowRotateLeft} />
+        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
       </DejaVuMenuButton>
     )
   }
