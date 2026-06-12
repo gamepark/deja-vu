@@ -3,7 +3,6 @@ import { ScoreHelper } from '@gamepark/deja-vu/rules/helper/ScoreHelper'
 import { StyledPlayerPanel, usePlayers, useRules } from '@gamepark/react-game'
 import { MaterialGame } from '@gamepark/rules-api'
 import { createPortal } from 'react-dom'
-import CardIcon from '../images/cards/Back03.jpg'
 import TokenIcon from '../images/InstinctToken.png'
 import Panel1 from '../images/panels/Panel1.png'
 import Panel2 from '../images/panels/Panel2.png'
@@ -35,7 +34,6 @@ const getCounters = (player: number, game?: MaterialGame) => {
   if (!game) return []
   const helper = new ScoreHelper(game)
   return [
-    { image: CardIcon, value: helper.getCardCount(player) },
     { image: TokenIcon, value: helper.getTokenCount(player) }
   ]
 }
