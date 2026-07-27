@@ -27,7 +27,7 @@
     "es-toolkit": "^1.45.1"
   },
   "devDependencies": {
-    "@gamepark/rules-api": "~7.6.3",
+    "@gamepark/rules-api": "~7.6.5",
     "es-toolkit": "^1.47.0",
     "madge": "^8.0.0",
     "vitest": "^4.1.8"
