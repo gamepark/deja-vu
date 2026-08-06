@@ -1,4 +1,4 @@
-import { DejaVuOptionsSpec } from '@gamepark/deja-vu/DejaVuOptions'
+import { DejaVuOptionsSpecV2 } from '@gamepark/deja-vu/DejaVuOptions'
 import { DejaVuRules } from '@gamepark/deja-vu/DejaVuRules'
 import { DejaVuSetup } from '@gamepark/deja-vu/DejaVuSetup'
 import { GameProvider } from '@gamepark/react-game'
@@ -19,7 +19,7 @@ createRoot(document.getElementById('root')!).render(
     <GameProvider
       game="deja-vu"
       Rules={DejaVuRules}
-      optionsSpec={DejaVuOptionsSpec}
+      optionsSpec={DejaVuOptionsSpecV2}
       GameSetup={DejaVuSetup}
       material={Material}
       locators={Locators}
